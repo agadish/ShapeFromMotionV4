@@ -3,8 +3,10 @@ function [ ConfigFileName] = Configuration(rand_flag, IsObjVideo, debug_mode)
 VideoFlags = struct('COLOR_STIMULI_FLAG',0, 'GRAY_STIMULI_FLAG',1,'DEBUG_MODE',0,'NUMBER_OF_OBJ',1);
 FrameConfig = struct('NUMBER_ROWS',0, 'NUMBER_COLUMNS', 0,'NUMBER_OF_FRAMES',0,'FPS',0);
 ColorConfig = struct('NUMBER_OF_COLORS', 0, 'IS_ISOLUMINANT',0 ,'COLOR_OF_BACKGROUND',0, 'BG_COLOR_1', 0, 'BG_COLOR_2', 0, 'BG_COLOR_3', 0, 'BG_COLOR_4', 0, 'BG_COLOR_5', 0, 'BG_COLOR_6', 0, 'OBJ_COLOR',0);
-ObjectConfig = struct('NAME','Shapes\RectA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
-Object2Config = struct('NAME','Shapes\RectB.png','TOP_OBJ',2);
+ObjectConfig = struct('NAME','Shapes/RectA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
+Object2Config = struct('NAME','Shapes/RectB.png','TOP_OBJ',2);
+% ObjectConfig = struct('NAME','Shapes/BunnyA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
+% Object2Config = struct('NAME','Shapes/BunnyB.png','TOP_OBJ',2);
 GrainsConfig = struct('NUMBER_OF_GRAINS',0, 'GRAIN_OBJ_FACTOR',0,'CHANGE_GRAIN_SIZE',1);
 StatisticsConfig = struct('IS_POISSON',0,'MEAN_NOF_BACKGROUND',0,'SD_NOF_BACKGROUND',0,'LAMBDA_NOF_BACKGROUND',0,'INITIAL_MEAN_NOF_OBJ',0,'FINAL_MEAN_NOF_OBJ',0,'INITIAL_SD_NOF_OBJ',0,'FINAL_SD_NOF_OBJ',0,'INITIAL_MEAN_NOF_OBJ2',0,'FINAL_MEAN_NOF_OBJ2',0,'INITIAL_SD_NOF_OBJ2',0,'FINAL_SD_NOF_OBJ2',0,'MEAN_NOF_OBJ_COLOR',0,'SD_NOF_OBJ_COLOR',0,'MEAN_GRAIN_SIZE',0,'SD_GRAIN_SIZE',0);
 MotionConfig = struct ('MOTION_FLAG', 0, 'FRAMES_PER_MOTION', 1, 'RIGHT_STEP', 0, 'DOWN_STEP',0);
@@ -29,7 +31,7 @@ end
 
 % Define the video frames parameters
 FrameConfig.NUMBER_OF_FRAMES = 150; % It is recommanded to set below 150.
-FrameConfig.FPS = 30; %Frame rate. MATLAB default=30, Nominal=25. 
+FrameConfig.FPS = 70; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
 ColorConfig.NUMBER_OF_COLORS = 6;   % 6,3 or 2
@@ -70,14 +72,14 @@ StatisticsConfig.SD_NOF_BACKGROUND = 0.1; %standart diviation - frame for BG gra
 StatisticsConfig.LAMBDA_NOF_BACKGROUND = 1 ; %Lammda parameter for poisson dist.
 
 StatisticsConfig.INITIAL_MEAN_NOF_OBJ = 1;  %mean for Object
-StatisticsConfig.FINAL_MEAN_NOF_OBJ = 15;  %mean for Object
-StatisticsConfig.INITIAL_SD_NOF_OBJ = 0.1;  %sd for Object
+StatisticsConfig.FINAL_MEAN_NOF_OBJ = 3;  %mean for Object
+StatisticsConfig.INITIAL_SD_NOF_OBJ = 0.5;  %sd for Object
 StatisticsConfig.FINAL_SD_NOF_OBJ = 0.1;  %sd for Object
 
-StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 5;  %mean for Object2
-StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 5;  %mean for Object2
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 15;  %mean for Object2
+StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 12;  %mean for Object2
 StatisticsConfig.INITIAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
-StatisticsConfig.FINAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
+StatisticsConfig.FINAL_SD_NOF_OBJ2 = 0.5;  %sd for Object2
 
 StatisticsConfig.MEAN_GRAIN_SIZE = 0.2; %each grain size is normally dist.
 StatisticsConfig.SD_GRAIN_SIZE = 0.1;
@@ -89,9 +91,9 @@ end
 
 %% Difine config name
 if debug_mode
-   ConfigFileName = 'results\stimuli_config.mat';
+   ConfigFileName = 'results/stimuli_config.mat';
 else
-   ConfigFileName = strcat('results\',datestr(now,30),'_stimuli_config.mat'); 
+   ConfigFileName = strcat('results/',datestr(now,30),'_stimuli_config.mat'); 
 end
 
 %% Define the configuration of the object
