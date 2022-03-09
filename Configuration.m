@@ -6,7 +6,7 @@ ColorConfig = struct('NUMBER_OF_COLORS', 0, 'IS_ISOLUMINANT',0 ,'COLOR_OF_BACKGR
 ObjectConfig = struct('NAME','Shapes\RectA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
 Object2Config = struct('NAME','Shapes\RectB.png','TOP_OBJ',2);
 GrainsConfig = struct('NUMBER_OF_GRAINS',0, 'GRAIN_OBJ_FACTOR',0,'CHANGE_GRAIN_SIZE',1);
-StatisticsConfig = struct('IS_POISSON',0,'MEAN_NOF_BACKGROUND',0,'SD_NOF_BACKGROUND',0,'LAMBDA_NOF_BACKGROUND',0,'MEAN_NOF_OBJ',0,'SD_NOF_OBJ',0,'MEAN_NOF_OBJ2',0,'SD_NOF_OBJ2',0,'MEAN_NOF_OBJ_COLOR',0,'SD_NOF_OBJ_COLOR',0,'MEAN_GRAIN_SIZE',0,'SD_GRAIN_SIZE',0);
+StatisticsConfig = struct('IS_POISSON',0,'MEAN_NOF_BACKGROUND',0,'SD_NOF_BACKGROUND',0,'LAMBDA_NOF_BACKGROUND',0,'INITIAL_MEAN_NOF_OBJ',0,'FINAL_MEAN_NOF_OBJ',0,'INITIAL_SD_NOF_OBJ',0,'FINAL_SD_NOF_OBJ',0,'INITIAL_MEAN_NOF_OBJ2',0,'FINAL_MEAN_NOF_OBJ2',0,'INITIAL_SD_NOF_OBJ2',0,'FINAL_SD_NOF_OBJ2',0,'MEAN_NOF_OBJ_COLOR',0,'SD_NOF_OBJ_COLOR',0,'MEAN_GRAIN_SIZE',0,'SD_GRAIN_SIZE',0);
 MotionConfig = struct ('MOTION_FLAG', 0, 'FRAMES_PER_MOTION', 1, 'RIGHT_STEP', 0, 'DOWN_STEP',0);
 RotationConfig = struct ('ROTATION_FLAG', 0, 'NUM_CHANGE_ROTATE_DIRECTION', 0, 'ROTATE_ANGEL_PER_FRAME', 0,'STARTING_ANGEL',0);
 VideoConfig = struct('NAME','MyVid.avi');
@@ -28,7 +28,7 @@ else
 end
 
 % Define the video frames parameters
-FrameConfig.NUMBER_OF_FRAMES = 90; % It is recommanded to set below 150.
+FrameConfig.NUMBER_OF_FRAMES = 150; % It is recommanded to set below 150.
 FrameConfig.FPS = 30; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
@@ -65,15 +65,19 @@ StatisticsConfig.IS_POISSON = 0; % Background grains distribution , 0-normal , 1
 % |  10  |      2.5        |
 
 % NOF = Number Of Freames
-StatisticsConfig.MEAN_NOF_BACKGROUND = 1; %mean no of frame for BG grain for normanl distribution
+StatisticsConfig.MEAN_NOF_BACKGROUND = 30; %mean no of frame for BG grain for normanl distribution
 StatisticsConfig.SD_NOF_BACKGROUND = 0.1; %standart diviation - frame for BG grain for normanl distribution
 StatisticsConfig.LAMBDA_NOF_BACKGROUND = 1 ; %Lammda parameter for poisson dist.
 
-StatisticsConfig.MEAN_NOF_OBJ = 8;  %mean for Object
-StatisticsConfig.SD_NOF_OBJ = 0.1;  %sd for Object
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ = 1;  %mean for Object
+StatisticsConfig.FINAL_MEAN_NOF_OBJ = 15;  %mean for Object
+StatisticsConfig.INITIAL_SD_NOF_OBJ = 0.1;  %sd for Object
+StatisticsConfig.FINAL_SD_NOF_OBJ = 0.1;  %sd for Object
 
-StatisticsConfig.MEAN_NOF_OBJ2 = 3;  %mean for Object2
-StatisticsConfig.SD_NOF_OBJ2 = 0.1;  %sd for Object2
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 5;  %mean for Object2
+StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 5;  %mean for Object2
+StatisticsConfig.INITIAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
+StatisticsConfig.FINAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
 
 StatisticsConfig.MEAN_GRAIN_SIZE = 0.2; %each grain size is normally dist.
 StatisticsConfig.SD_GRAIN_SIZE = 0.1;
@@ -130,15 +134,15 @@ RotationConfig.ROTATE_ANGEL_PER_FRAME =1;
 RotationConfig.STARTING_ANGEL = 0;
 
 if ~IsObjVideo
-    [~,figure_str] = strtok(ObjectConfig.NAME,'\');
+    [~,figure_str] = strtok(ObjectConfig.NAME,'/');
 else
     figure_str = 'video_pre_made';
 end
-VideoConfig.NAME=strcat('results\',figure_str,' #grain ',int2str(GrainsConfig.NUMBER_OF_GRAINS),...
+VideoConfig.NAME=strcat('results/',figure_str,' #grain ',int2str(GrainsConfig.NUMBER_OF_GRAINS),...
         'BG Stat ',int2str(StatisticsConfig.MEAN_NOF_BACKGROUND),...
         ' 0.',int2str(StatisticsConfig.SD_NOF_BACKGROUND*10),...
-        'OBJ Stat',int2str(StatisticsConfig.MEAN_NOF_OBJ),...
-        ' 0.',int2str(StatisticsConfig.SD_NOF_OBJ*10),...
+        'OBJ Stat',int2str(StatisticsConfig.INITIAL_MEAN_NOF_OBJ),...
+        ' 0.',int2str(StatisticsConfig.INITIAL_SD_NOF_OBJ*10),...
         ' size factor',int2str(GrainsConfig.GRAIN_OBJ_FACTOR),...
         ' pois',int2str(StatisticsConfig.IS_POISSON),...
         ' lamda',int2str(StatisticsConfig.LAMBDA_NOF_BACKGROUND));

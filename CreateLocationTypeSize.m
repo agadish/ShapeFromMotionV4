@@ -21,6 +21,35 @@ function [Grains_Locations, Grains_Types, Grains_Sizes] = CreateLocationTypeSize
     Grain_Type = zeros(1, GrainsConfig.NUMBER_OF_GRAINS);
     Grain_Gray_Lvl = zeros(1, GrainsConfig.NUMBER_OF_GRAINS);
     Grain_size = zeros(1, GrainsConfig.NUMBER_OF_GRAINS);
+
+    % Create mean objects arrays
+    mean_nof_obj1_delta = (StatisticsConfig.FINAL_MEAN_NOF_OBJ - StatisticsConfig.INITIAL_MEAN_NOF_OBJ) / (FrameConfig.NUMBER_OF_FRAMES - 1);
+    if (0 == mean_nof_obj1_delta)
+        mean_nof_obj1 = StatisticsConfig.FINAL_MEAN_NOF_OBJ * ones(FrameConfig.NUMBER_OF_FRAMES, 1);
+    else
+        mean_nof_obj1 = [StatisticsConfig.INITIAL_MEAN_NOF_OBJ : mean_nof_obj1_delta : StatisticsConfig.FINAL_MEAN_NOF_OBJ];
+    end
+    mean_nof_obj2_delta = (StatisticsConfig.FINAL_MEAN_NOF_OBJ2 - StatisticsConfig.INITIAL_MEAN_NOF_OBJ2) / (FrameConfig.NUMBER_OF_FRAMES - 1);
+    if (0 == mean_nof_obj2_delta)
+        mean_nof_obj2 = StatisticsConfig.FINAL_MEAN_NOF_OBJ2 * ones(FrameConfig.NUMBER_OF_FRAMES, 1);
+    else
+        mean_nof_obj2 = [StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 : mean_nof_obj2_delta : StatisticsConfig.FINAL_MEAN_NOF_OBJ2];
+    end
+
+
+    % Create sd objects arrays
+    sd_nof_obj1_delta = (StatisticsConfig.FINAL_SD_NOF_OBJ - StatisticsConfig.INITIAL_SD_NOF_OBJ) / (FrameConfig.NUMBER_OF_FRAMES - 1);
+    if (0 == sd_nof_obj1_delta)
+        sd_nof_obj1 = StatisticsConfig.FINAL_SD_NOF_OBJ * ones(FrameConfig.NUMBER_OF_FRAMES, 1);
+    else
+        sd_nof_obj1 = [StatisticsConfig.INITIAL_SD_NOF_OBJ : sd_nof_obj1_delta : StatisticsConfig.FINAL_SD_NOF_OBJ];
+    end
+    sd_nof_obj2_delta = (StatisticsConfig.FINAL_SD_NOF_OBJ2 - StatisticsConfig.INITIAL_SD_NOF_OBJ2) / (FrameConfig.NUMBER_OF_FRAMES - 1);
+    if (0 == sd_nof_obj2_delta)
+        sd_nof_obj2 = StatisticsConfig.FINAL_SD_NOF_OBJ2 * ones(FrameConfig.NUMBER_OF_FRAMES, 1);
+    else
+        sd_nof_obj2 = [StatisticsConfig.INITIAL_SD_NOF_OBJ2 : sd_nof_obj2_delta : StatisticsConfig.FINAL_SD_NOF_OBJ2];
+    end
     
     for Curr_frame = 1: FrameConfig.NUMBER_OF_FRAMES
         if debug_mode
@@ -41,10 +70,10 @@ function [Grains_Locations, Grains_Types, Grains_Sizes] = CreateLocationTypeSize
             end
 
             if Is_obj == 1
-                NOF(v_NOF)=round(normrnd(StatisticsConfig.MEAN_NOF_OBJ,StatisticsConfig.SD_NOF_OBJ,[1 length(v_NOF)]));      
+                NOF(v_NOF)=round(normrnd(mean_nof_obj1(Curr_frame), sd_nof_obj1(Curr_frame),[1 length(v_NOF)]));      
             else
                 if Is_obj == 2
-                    NOF(v_NOF)=round(normrnd(StatisticsConfig.MEAN_NOF_OBJ2,StatisticsConfig.SD_NOF_OBJ2,[1 length(v_NOF)]));      
+                    NOF(v_NOF)=round(normrnd(mean_nof_obj2(Curr_frame), sd_nof_obj2(Curr_frame),[1 length(v_NOF)]));      
                 else
                     if StatisticsConfig.IS_POISSON==0
                         NOF(v_NOF)=round(normrnd(StatisticsConfig.MEAN_NOF_BACKGROUND,StatisticsConfig.SD_NOF_BACKGROUND,[1 length(v_NOF)]));

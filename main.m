@@ -9,7 +9,7 @@ function main(varargin)
         mkdir('results');
     end
     switch nargin
-        case 0
+        case 0  
             % in case main was called without arguments
             config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode); 
         case 1
