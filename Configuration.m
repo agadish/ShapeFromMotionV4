@@ -1,4 +1,4 @@
-function [ ConfigFileName] = Configuration(rand_flag, IsObjVideo, debug_mode)
+function [ ConfigFileName] = Configuration(rand_flag, IsObjVideo, debug_mode, obj1_mean, obj1_sd, obj2_mean, obj2_sd)
 %% Create structs
 VideoFlags = struct('COLOR_STIMULI_FLAG',0, 'GRAY_STIMULI_FLAG',1,'DEBUG_MODE',0,'NUMBER_OF_OBJ',1);
 FrameConfig = struct('NUMBER_ROWS',0, 'NUMBER_COLUMNS', 0,'NUMBER_OF_FRAMES',0,'FPS',0);
@@ -30,7 +30,7 @@ else
 end
 
 % Define the video frames parameters
-FrameConfig.NUMBER_OF_FRAMES = 150; % It is recommanded to set below 150.
+FrameConfig.NUMBER_OF_FRAMES = 90; % It is recommanded to set below 150.
 FrameConfig.FPS = 70; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
@@ -67,19 +67,19 @@ StatisticsConfig.IS_POISSON = 0; % Background grains distribution , 0-normal , 1
 % |  10  |      2.5        |
 
 % NOF = Number Of Freames
-StatisticsConfig.MEAN_NOF_BACKGROUND = 30; %mean no of frame for BG grain for normanl distribution
+StatisticsConfig.MEAN_NOF_BACKGROUND = 1; %mean no of frame for BG grain for normanl distribution
 StatisticsConfig.SD_NOF_BACKGROUND = 0.1; %standart diviation - frame for BG grain for normanl distribution
 StatisticsConfig.LAMBDA_NOF_BACKGROUND = 1 ; %Lammda parameter for poisson dist.
 
-StatisticsConfig.INITIAL_MEAN_NOF_OBJ = 1;  %mean for Object
-StatisticsConfig.FINAL_MEAN_NOF_OBJ = 3;  %mean for Object
-StatisticsConfig.INITIAL_SD_NOF_OBJ = 0.5;  %sd for Object
-StatisticsConfig.FINAL_SD_NOF_OBJ = 0.1;  %sd for Object
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ = obj1_mean;  %mean for Object
+StatisticsConfig.FINAL_MEAN_NOF_OBJ = obj1_mean;  %mean for Object
+StatisticsConfig.INITIAL_SD_NOF_OBJ = obj1_sd;  %sd for Object
+StatisticsConfig.FINAL_SD_NOF_OBJ = obj1_sd;  %sd for Object
 
-StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 15;  %mean for Object2
-StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 12;  %mean for Object2
-StatisticsConfig.INITIAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
-StatisticsConfig.FINAL_SD_NOF_OBJ2 = 0.5;  %sd for Object2
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = obj2_mean;  %mean for Object2
+StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = obj2_mean;  %mean for Object2
+StatisticsConfig.INITIAL_SD_NOF_OBJ2 = obj2_sd;  %sd for Object2
+StatisticsConfig.FINAL_SD_NOF_OBJ2 = obj2_sd;  %sd for Object2
 
 StatisticsConfig.MEAN_GRAIN_SIZE = 0.2; %each grain size is normally dist.
 StatisticsConfig.SD_GRAIN_SIZE = 0.1;
@@ -140,15 +140,22 @@ if ~IsObjVideo
 else
     figure_str = 'video_pre_made';
 end
-VideoConfig.NAME=strcat('results/',figure_str,' #grain ',int2str(GrainsConfig.NUMBER_OF_GRAINS),...
-        'BG Stat ',int2str(StatisticsConfig.MEAN_NOF_BACKGROUND),...
-        ' 0.',int2str(StatisticsConfig.SD_NOF_BACKGROUND*10),...
-        'OBJ Stat',int2str(StatisticsConfig.INITIAL_MEAN_NOF_OBJ),...
-        ' 0.',int2str(StatisticsConfig.INITIAL_SD_NOF_OBJ*10),...
-        ' size factor',int2str(GrainsConfig.GRAIN_OBJ_FACTOR),...
-        ' pois',int2str(StatisticsConfig.IS_POISSON),...
-        ' lamda',int2str(StatisticsConfig.LAMBDA_NOF_BACKGROUND));
-
+% VideoConfig.NAME=strcat('results/',figure_str,' #grain ',int2str(GrainsConfig.NUMBER_OF_GRAINS),...
+%         'BG Stat ',int2str(StatisticsConfig.MEAN_NOF_BACKGROUND),...
+%         ' 0.',int2str(StatisticsConfig.SD_NOF_BACKGROUND*10),...
+%         'OBJ Stat',int2str(StatisticsConfig.INITIAL_MEAN_NOF_OBJ),...
+%         ' 0.',int2str(StatisticsConfig.INITIAL_SD_NOF_OBJ*10),...
+%         ' size factor',int2str(GrainsConfig.GRAIN_OBJ_FACTOR),...
+%         ' pois',int2str(StatisticsConfig.IS_POISSON),...
+%         ' lamda',int2str(StatisticsConfig.LAMBDA_NOF_BACKGROUND));
+VideoConfig.NAME = sprintf('results/%s__grain_%d_%d__bg_%.1f_%.1f__obj1_%.1f_%.1f__obj2_%.1f_%.1f__ispois_%d_lambda_%.1f.avi', ...
+    figure_str,...
+    GrainsConfig.NUMBER_OF_GRAINS, GrainsConfig.GRAIN_OBJ_FACTOR,...
+    StatisticsConfig.MEAN_NOF_BACKGROUND, StatisticsConfig.SD_NOF_BACKGROUND,...
+    StatisticsConfig.INITIAL_MEAN_NOF_OBJ, StatisticsConfig.INITIAL_SD_NOF_OBJ,...
+    StatisticsConfig.INITIAL_MEAN_NOF_OBJ2, StatisticsConfig.INITIAL_SD_NOF_OBJ2,...
+    StatisticsConfig.IS_POISSON, StatisticsConfig.LAMBDA_NOF_BACKGROUND...
+);
 clearvars debug_mode;
 save(ConfigFileName,'-v7.3')
 end
