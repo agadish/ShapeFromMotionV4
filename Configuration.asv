@@ -30,8 +30,8 @@ else
 end
 
 % Define the video frames parameters
-FrameConfig.NUMBER_OF_FRAMES = 150; % It is recommanded to set below 150.
-FrameConfig.FPS = 70; %Frame rate. MATLAB default=30, Nominal=25. 
+FrameConfig.NUMBER_OF_FRAMES = 180; % It is recommanded to set below 150.
+FrameConfig.FPS = 60; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
 ColorConfig.NUMBER_OF_COLORS = 6;   % 6,3 or 2
@@ -71,13 +71,13 @@ StatisticsConfig.MEAN_NOF_BACKGROUND = 30; %mean no of frame for BG grain for no
 StatisticsConfig.SD_NOF_BACKGROUND = 0.1; %standart diviation - frame for BG grain for normanl distribution
 StatisticsConfig.LAMBDA_NOF_BACKGROUND = 1 ; %Lammda parameter for poisson dist.
 
-StatisticsConfig.INITIAL_MEAN_NOF_OBJ = 1;  %mean for Object
-StatisticsConfig.FINAL_MEAN_NOF_OBJ = 3;  %mean for Object
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ = 12;  %mean for Object
+StatisticsConfig.FINAL_MEAN_NOF_OBJ = 15;  %mean for Object
 StatisticsConfig.INITIAL_SD_NOF_OBJ = 0.5;  %sd for Object
 StatisticsConfig.FINAL_SD_NOF_OBJ = 0.1;  %sd for Object
 
-StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 15;  %mean for Object2
-StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 12;  %mean for Object2
+StatisticsConfig.INITIAL_MEAN_NOF_OBJ2 = 3;  %mean for Object2
+StatisticsConfig.FINAL_MEAN_NOF_OBJ2 = 1;  %mean for Object2
 StatisticsConfig.INITIAL_SD_NOF_OBJ2 = 0.1;  %sd for Object2
 StatisticsConfig.FINAL_SD_NOF_OBJ2 = 0.5;  %sd for Object2
 
