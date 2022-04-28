@@ -3,3 +3,4 @@ src/*.asv
 experiments/results
 *.avi
 *.mat
+*.xls

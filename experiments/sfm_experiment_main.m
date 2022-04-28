@@ -2,7 +2,7 @@ close all;
 clear all;
 clc;
 %Please enter your name
-Name = 'Test1';
+Name = 'Assaf';
 
 
 Date = datestr(now,30);
@@ -12,8 +12,8 @@ Date = datestr(now,30);
 
 
   
-%When you're ready please press F5
+%When you're ready please press F5           
 sfm_experiment3(Name,Date,Exp_Type); 
 
        
- %      Good  Luck)  
+ %  Good  Luck
