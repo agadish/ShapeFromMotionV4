@@ -1,4 +1,5 @@
-
-results/
-
-*.asv
+src/results/
+src/*.asv
+experiments/results
+*.avi
+*.mat
