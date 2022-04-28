@@ -9,13 +9,17 @@ function main(varargin)
         mkdir('results');
     end
 %      for obj_mean = [[1.5, 0.1];  [2, 0.7] ; [0.3, 0.9] ; [1.3, 0.3]; [2.5, 1]; [0.1, 1], 0.7]
-    for obj_mean = [[8, 10] ; [10, 12] ; [8, 14]; [5.5, 6.5]; [6.6, 6.5]; [10, 7.5]]'
-        obj1_mean = obj_mean(1);
-        obj2_mean = obj_mean(2);
-        for obj1_sd = [0.1, 0.7, 1.5]
+%    for obj_mean = [[8, 10] ; [10, 12] ; [8, 14]; [5.5, 6.5]; [6.6, 6.5]; [10, 7.5]]'
+%        obj1_mean = obj_mean(1);
+%        obj2_mean = obj_mean(2);
+%        for obj1_sd = [0.1, 0.7, 1.5]
+    for obj_sd = [[1.5, 0.1] ; [2, 0.7] ; [0.3, 0.9]; [1.3, 0.3]; [2.5, 1]; [0.1, 1]]'
+      obj1_sd = obj_sd(1);
+      obj2_sd = obj_sd(2);
+      for obj1_mean = [5, 10, 15]
 %                 for obj2_sd = [0.1, 2, 4]
                     % in case main was called without arguments      
-                    config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj1_sd, obj2_mean, obj1_sd);
+                    config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj1_sd, obj1_mean, obj2_sd);
                     load(config_file_name);
 
                     if isfile(VideoConfig.NAME)
