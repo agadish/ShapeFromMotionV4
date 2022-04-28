@@ -3,8 +3,8 @@ function [ ConfigFileName] = Configuration(rand_flag, IsObjVideo, debug_mode, ob
 VideoFlags = struct('COLOR_STIMULI_FLAG',0, 'GRAY_STIMULI_FLAG',1,'DEBUG_MODE',0,'NUMBER_OF_OBJ',1);
 FrameConfig = struct('NUMBER_ROWS',0, 'NUMBER_COLUMNS', 0,'NUMBER_OF_FRAMES',0,'FPS',0);
 ColorConfig = struct('NUMBER_OF_COLORS', 0, 'IS_ISOLUMINANT',0 ,'COLOR_OF_BACKGROUND',0, 'BG_COLOR_1', 0, 'BG_COLOR_2', 0, 'BG_COLOR_3', 0, 'BG_COLOR_4', 0, 'BG_COLOR_5', 0, 'BG_COLOR_6', 0, 'OBJ_COLOR',0);
-ObjectConfig = struct('NAME','Shapes/RectA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
-Object2Config = struct('NAME','Shapes/RectB.png','TOP_OBJ',2);
+ObjectConfig = struct('NAME','Shapes/rectA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
+Object2Config = struct('NAME','Shapes/rectB.png','TOP_OBJ',2);
 % ObjectConfig = struct('NAME','Shapes/BunnyA.png','INITIAL_ROW_LOCATION', 0, 'INITIAL_COLUMN_LOCATION', 0, 'INITIAL_OBJ_RATIO_SIZE', 0, 'FINAL_OBJ_RATIO_SIZE',0, 'OBJ_OPACITY',0);
 % Object2Config = struct('NAME','Shapes/BunnyB.png','TOP_OBJ',2);
 GrainsConfig = struct('NUMBER_OF_GRAINS',0, 'GRAIN_OBJ_FACTOR',0,'CHANGE_GRAIN_SIZE',1);
@@ -30,8 +30,8 @@ else
 end
 
 % Define the video frames parameters
-FrameConfig.NUMBER_OF_FRAMES = 90; % It is recommanded to set below 150.
-FrameConfig.FPS = 70; %Frame rate. MATLAB default=30, Nominal=25. 
+FrameConfig.NUMBER_OF_FRAMES = 150; % It is recommanded to set below 150.
+FrameConfig.FPS = 30; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
 ColorConfig.NUMBER_OF_COLORS = 6;   % 6,3 or 2
@@ -67,7 +67,7 @@ StatisticsConfig.IS_POISSON = 0; % Background grains distribution , 0-normal , 1
 % |  10  |      2.5        |
 
 % NOF = Number Of Freames
-StatisticsConfig.MEAN_NOF_BACKGROUND = 1; %mean no of frame for BG grain for normanl distribution
+StatisticsConfig.MEAN_NOF_BACKGROUND = 200; %mean no of frame for BG grain for normanl distribution
 StatisticsConfig.SD_NOF_BACKGROUND = 0.1; %standart diviation - frame for BG grain for normanl distribution
 StatisticsConfig.LAMBDA_NOF_BACKGROUND = 1 ; %Lammda parameter for poisson dist.
 

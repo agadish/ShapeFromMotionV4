@@ -8,12 +8,14 @@ function main(varargin)
     if ~isdir('results')
         mkdir('results');
     end
-     for obj1_mean = [0.1, 1, 2, 4, 5, 8, 10, 14, 20]
-        for obj1_sd = [0.1, 1, 2, 4, 5, 8, 10, 14, 20]
-            for obj2_mean = [0.1, 2, 5, 10 20]
-                for obj2_sd = [0.1, 2, 5, 10 20]
+%      for obj_mean = [[1.5, 0.1];  [2, 0.7] ; [0.3, 0.9] ; [1.3, 0.3]; [2.5, 1]; [0.1, 1], 0.7]
+    for obj_mean = [[8, 10] ; [10, 12] ; [8, 14]; [5.5, 6.5]; [6.6, 6.5]; [10, 7.5]]'
+        obj1_mean = obj_mean(1);
+        obj2_mean = obj_mean(2);
+        for obj1_sd = [0.1, 0.7, 1.5]
+%                 for obj2_sd = [0.1, 2, 4]
                     % in case main was called without arguments      
-                    config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj1_sd, obj2_mean, obj2_sd);
+                    config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj1_sd, obj2_mean, obj1_sd);
                     load(config_file_name);
 
                     if isfile(VideoConfig.NAME)
@@ -25,8 +27,7 @@ function main(varargin)
 
                     Stimuli_v3(config_file_name);
                     toc(Time);
-                end
-            end
+%                 end
         end
      end
 end
