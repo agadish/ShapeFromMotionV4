@@ -13,7 +13,7 @@ function main(varargin)
     for obj_mean = [[7, 7.7]; [8, 10] ; [10, 12] ; [14, 8]; [5.5, 6.5]; [6.6, 6.5]; [10, 7.5]; [6, 3.5]]'
         obj1_mean = obj_mean(1);
         obj2_mean = obj_mean(2);
-        for obj_sd = [0.1, 0.7, 1.5]
+        for obj_sd = [0.1   , 0.7, 1.5]
             % in case main was called without arguments
             config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj_sd, obj2_mean, obj_sd);
             load(config_file_name);

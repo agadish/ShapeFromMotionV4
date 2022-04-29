@@ -4,3 +4,4 @@ experiments/results
 *.avi
 *.mat
 *.xls
+.DS_Store

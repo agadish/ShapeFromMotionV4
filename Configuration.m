@@ -30,8 +30,8 @@ else
 end
 
 % Define the video frames parameters
-FrameConfig.NUMBER_OF_FRAMES = 200; % It is recommanded to set below 150.
-FrameConfig.FPS = 50; %Frame rate. MATLAB default=30, Nominal=25. 
+FrameConfig.NUMBER_OF_FRAMES = 210; % It is recommanded to set below 150.
+FrameConfig.FPS = 70; %Frame rate. MATLAB default=30, Nominal=25. 
 
 %% Define the amount of colors of the grains and the background color.
 ColorConfig.NUMBER_OF_COLORS = 6;   % 6,3 or 2
