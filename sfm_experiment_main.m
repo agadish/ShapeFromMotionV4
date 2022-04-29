@@ -3,7 +3,7 @@ clear all;
 clc;
 
 %Please enter your name
-Name = 'Assaf';
+Name = 'test1';
 
 % We will perform experiment type 1 twice, and type 2 twice
 % When you're ready please press F5           

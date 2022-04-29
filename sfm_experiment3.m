@@ -267,14 +267,9 @@ for loopNum = 0:maxLoop-1
             end
         end
         respMat(loopNum*6 + 4,i) = elapsedTime;
-        respMat(loopNum*6 + 6,i) = nan;
+        respMat(loopNum*6 + 6,i) = trial;
     end
 end
-%fill in video number for data processing
-for i=1:numTrials
-   respMat(loopNum*6 + 7,i) = i; 
-end
-
 
 
 text = 'The experiment has ended\n\nThank you for participating\n\n\n\nPlease press any key to exit';
