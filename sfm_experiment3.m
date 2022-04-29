@@ -1,4 +1,34 @@
-jkjk% Query the maximum priority level
+function sfm_experiment3 (Name, Date, ExpIndex) 
+% Clear the workspace
+sca;
+% Setup PTB with some default values
+PsychDefaultSetup(2);
+
+% Set the screen number to the external secondary monitor if there is one
+% connected
+screenNumber = max(Screen('Screens'));
+% Screen('Preference', 'SkipSyncTests', 1);
+% help SyncTrouble
+
+% Define black, white and grey
+white = WhiteIndex(screenNumber);
+grey = white / 2;
+black = BlackIndex(screenNumber);
+
+% Activate this for debugging
+% PsychDebugWindowConfiguration;
+
+% Open the screen
+[window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey, [], 32, 2);
+% [window, windowRect] = Screen('OpenWindow', screenNumber, grey, [], 32, 2);
+
+% Flip to clear
+Screen('Flip', window);
+
+% Set the text size
+Screen('TextSize', window, 40);
+
+% Query the maximum priority level
 topPriorityLevel = MaxPriority(window);
 
 % Get the centre coordinate of the window
