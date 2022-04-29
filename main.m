@@ -15,7 +15,7 @@ function main(varargin)
         obj2_mean = obj_mean(2);
         for obj_sd = [0.1   , 0.7, 1.5]
             % in case main was called without arguments
-            config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj1_mean, obj_sd, obj2_mean, obj_sd);
+            config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/mean_exp', obj1_mean, obj_sd, obj2_mean, obj_sd);
             load(config_file_name);
 
             if isfile(VideoConfig.NAME)
@@ -36,7 +36,7 @@ function main(varargin)
         obj2_sd = obj_sd(2);
         for obj_mean = [5, 10, 15]
         % in case main was called without arguments      
-            config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, obj_mean, obj1_sd, obj_mean, obj2_sd);
+            config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/sd_exp', obj_mean, obj1_sd, obj_mean, obj2_sd);
             load(config_file_name);
             
             if isfile(VideoConfig.NAME)
