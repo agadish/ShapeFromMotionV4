@@ -5,3 +5,5 @@ experiments/results
 *.mat
 *.xls
 .DS_Store
+_tmp*
+_old*

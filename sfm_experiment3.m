@@ -1,12 +1,14 @@
 function sfm_experiment3 (Name, Date, ExpIndex) 
 % Clear the workspace
 sca;
+fprintf('hello\n');
 
 % Setup PTB with some default values
 PsychDefaultSetup(2);
 
 % Set the screen number to the external secondary monitor if there is one
 % connected
+
 screenNumber = max(Screen('Screens'));
 % Screen('Preference', 'SkipSyncTests', 1);
 % help SyncTrouble
@@ -62,7 +64,7 @@ replayKey = KbName('r');
 
 %Ethan changes: 
 
-stimuli_2022_sd = {'experiment/mean_exp/rectA.png__obj1_14.0_0.7__obj2_8.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'
+stimuli_2022_mean_plane = {'experiment/mean_exp/rectA.png__obj1_14.0_0.7__obj2_8.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'
     'experiment/mean_exp/rectA.png__obj1_10.0_0.7__obj2_12.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/mean_exp/rectA.png__obj1_6.6_0.1__obj2_6.5_0.1__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/mean_exp/rectA.png__obj1_6.0_0.7__obj2_3.5_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
@@ -85,10 +87,9 @@ stimuli_2022_sd = {'experiment/mean_exp/rectA.png__obj1_14.0_0.7__obj2_8.0_0.7__
     'experiment/mean_exp/rectA.png__obj1_5.5_0.7__obj2_6.5_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/mean_exp/rectA.png__obj1_10.0_0.1__obj2_12.0_0.1__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/mean_exp/rectA.png__obj1_6.6_0.7__obj2_6.5_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
-    'experiment/mean_exp/rectA.png__obj1_7.0_1.5__obj2_7.7_1.5__70Hz_3sec__bg_250.0_0.1.avi'...
-};
+    'experiment/mean_exp/rectA.png__obj1_7.0_1.5__obj2_7.7_1.5__70Hz_3sec__bg_250.0_0.1.avi'};
 
-stimuli_2022_mean = {'experiment/sd_exp/rectA.png__obj1_5.0_2.0__obj2_5.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
+stimuli_2022_sd_plane = {'experiment/sd_exp/rectA.png__obj1_5.0_2.0__obj2_5.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/sd_exp/rectA.png__obj1_15.0_1.5__obj2_15.0_0.1__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/sd_exp/rectA.png__obj1_15.0_2.5__obj2_15.0_1.0__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/sd_exp/rectA.png__obj1_5.0_1.5__obj2_5.0_0.1__70Hz_3sec__bg_250.0_0.1.avi'...
@@ -105,15 +106,14 @@ stimuli_2022_mean = {'experiment/sd_exp/rectA.png__obj1_5.0_2.0__obj2_5.0_0.7__7
     'experiment/sd_exp/rectA.png__obj1_15.0_0.3__obj2_15.0_0.9__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/sd_exp/rectA.png__obj1_15.0_2.0__obj2_15.0_0.7__70Hz_3sec__bg_250.0_0.1.avi'...
     'experiment/sd_exp/rectA.png__obj1_5.0_0.3__obj2_5.0_0.9__70Hz_3sec__bg_250.0_0.1.avi'...
-    'experiment/sd_exp/rectA.png__obj1_10.0_1.3__obj2_10.0_0.3__70Hz_3sec__bg_250.0_0.1.avi'...
-};
+    'experiment/sd_exp/rectA.png__obj1_10.0_1.3__obj2_10.0_0.3__70Hz_3sec__bg_250.0_0.1.avi'};
 
 
 switch ExpIndex
     case 1
-        stimuli=stimuli_2022_sd;
+        stimuli=stimuli_2022_mean_plane;
     case 2
-        stimuli=stimuli_2022_mean;
+        stimuli=stimuli_2022_sd_plane;
 end
 % Make the vector which will determine the order of the trial and randomise it
 numTrials = size(stimuli ,2);
@@ -146,8 +146,8 @@ for loopNum = 0:maxLoop-1
     respMat(loopNum*6 + 3,:) = 0;
     respMat(loopNum*6 + 4,:) = 0;
     
-    %shuffler = Shuffle(1:numTrials);
-    %exp_order = exp_order(shuffler);
+    shuffler = Shuffle(1:numTrials);
+    exp_order = exp_order(shuffler);
     respMat(loopNum*6 + 5,:) = 0;
     % Animation loop: we loop for the total number of trials
     for trial = 1:numTrials

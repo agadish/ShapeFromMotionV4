@@ -2,7 +2,7 @@ close all;
 clear all;
 clc;
 %Please enter your name
-Name = 'Test1';
+Name = 'Assaf';
 
 
 Date = datestr(now,30);
