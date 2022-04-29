@@ -7,3 +7,5 @@ experiments/results
 .DS_Store
 _tmp*
 _old*
+experiment/Exp
+*.asv
