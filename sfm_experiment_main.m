@@ -2,7 +2,6 @@ close all;
 clear all;
 clc;
 
-Date = datestr(now,30);
 %Please enter your name
 Name = 'Assaf';
 
@@ -10,12 +9,12 @@ Name = 'Assaf';
 % When you're ready please press F5           
 
 Exp_Type = 1;
-sfm_experiment3(Name ,Date,Exp_Type); 
+sfm_experiment3(Name, datestr(now, 30), Exp_Type); 
 Exp_Type = 2;
-sfm_experiment3(Name ,Date,Exp_Type); 
+sfm_experiment3(Name, datestr(now, 30), Exp_Type); 
 Exp_Type = 1;
-sfm_experiment3(Name ,Date,Exp_Type); 
+sfm_experiment3(Name, datestr(now, 30), Exp_Type); 
 Exp_Type = 2;       
-sfm_experiment3(Name ,Date,Exp_Type); 
+sfm_experiment3(Name, datestr(now, 30), Exp_Type); 
          
 % Good Luck
