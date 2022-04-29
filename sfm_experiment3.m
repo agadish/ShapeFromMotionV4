@@ -1,4 +1,4 @@
-function sfm_experiment3 (Name, Date, ExpIndex) 
+ function sfm_experiment3 (Name, Date, ExpIndex) 
 % Clear the workspace
 sca;
 % Setup PTB with some default values
