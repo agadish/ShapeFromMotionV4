@@ -26,6 +26,7 @@ class PlaneExperiment(object):
 
         x = np.array(self._get_column(0))
         y = np.array(self._get_column(1))
+        max_data = max(np.max(x), np.max(y))
         z_value = np.array(self._get_column(2))
         if not len(set(z_value)) == 1:
             raise ValueError('DataFrame referes to more than 1 value of z')
@@ -48,9 +49,9 @@ class PlaneExperiment(object):
 
             removed_labels = np.array([0 for i in removed_indices])
 
-        self._data = np.array([(used_x[i], used_y[i], ) for i in range(len(used_x))])
+        self._data = np.array([(used_x[i] / max_data, used_y[i] / max_data, ) for i in range(len(used_x))])
         self._labels = used_labels
-        self._removed_data = np.array([(removed_x[i], removed_y[i], ) for i in range(len(removed_x))])
+        self._removed_data = np.array([(removed_x[i] / max_data, removed_y[i] / max_data, ) for i in range(len(removed_x))])
         self._removed_labels = removed_labels
 
     def _get_column(self, index):
@@ -107,11 +108,10 @@ class DataParser(object):
 
     def create_plot(self, X, y, removed_X, clf, title, xlabel, ylabel, experiment_name=''):
         # plot the data points
-        plt.clf()
         if removed_X.size:
             plt.scatter(removed_X[:, 0], removed_X[:, 1], c=['grey'] * len(removed_X), marker='x', s=70, cmap=plt.cm.PiYG)
 
-        plt.scatter(X[:, 0], X[:, 1], c=y, s=70, cmap=plt.cm.PiYG)
+        plt.scatter(X[:, 0], X[:, 1], c=['orange' if a == 1 else 'purple' for a in y], s=70, cmap=plt.cm.PiYG)
 
         # plot the decision function
         max_axis_val = 0
@@ -120,8 +120,8 @@ class DataParser(object):
         if removed_X.size:
             max_axis_val = max(max_axis_val, np.max(removed_X))
 
-        plt.xlim([0, max_axis_val + 1])
-        plt.ylim([0, max_axis_val + 1])
+        plt.xlim([0, max_axis_val * 1.05])
+        plt.ylim([0, max_axis_val * 1.05])
         plt.title(title)
         ax = plt.gca()
         ax.set_xlabel(xlabel)
@@ -147,41 +147,41 @@ class DataParser(object):
         # plot decision boundary and margins
         ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                    linestyles=['--', '-', '--'])
-        plt.savefig('%s.png' % (experiment_name, ))
+        plt.show()
+        #  plt.savefig('%s.png' % (experiment_name, ))
 
 
 SVC_KERNEL_TYPES = ('linear', 'poly', 'rbf', )
 class SVCParser(DataParser):
-    def __init__(self, kernel_type):
+    def __init__(self, kernel_type, gamma=None):
         if kernel_type not in SVC_KERNEL_TYPES:
             raise TypeError('Invalid kernel type, use %s' % (SVC_KERNEL_TYPES, ))
         super(SVCParser, self).__init__()
         self._kernel_type = kernel_type
+        self._gamma = gamma
 
     def parse(self, data, labels, removed_data, title_data='', xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
         """
-        c_value = 1000
+        c_value = 75
         result = np.ndarray((3, 2, ))
         x = data
         y = labels
-        trained_svc = list()
-        svc = svm.SVC(C=c_value, kernel=self._kernel_type)
+        svc = svm.SVC(C=c_value, kernel=self._kernel_type, gamma=self._gamma)
         trained_svc = svc.fit(data, labels)
         self.create_plot(
             data,
             labels,
             removed_data,
             trained_svc,
-            'SVM with %s kernel, %s' % (self._kernel_type, title_data, ),
+            '%s: SVM (%s kernel, C=%d%s)' % (title_data, self._kernel_type, c_value, '' if self._gamma is None else ', $\gamma$=%.1f' % (self._gamma, ), ),
             xlabel,
             ylabel,
             '%s_%s' % (experiment_name, self._kernel_type, )
         )
 
-        plt.show()
         return trained_svc.n_support_
 
 class SVRParser(DataParser):
@@ -228,6 +228,7 @@ def get_sd_plane_data_frame():
 
 
 def handle_mean_experiments():
+    parsers = [SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
     parsers = [
         SVCParser(kernel) for kernel in SVC_KERNEL_TYPES
     ]
@@ -235,8 +236,11 @@ def handle_mean_experiments():
     data_frame = get_mean_plane_data_frame()
     mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.25, 0.8, 1.2]]
 
+    i = 0
     for experiment in mean_experiment_groups:
         for parser in parsers:
+            i += 1
+            #  plt.subplot(len(mean_experiment_groups), len(parsers), i)
             parser.parse(experiment.data,
                          experiment.labels,
                          experiment._removed_data,
@@ -244,6 +248,8 @@ def handle_mean_experiments():
                          '$\mu_{A}$',
                          '$\mu_{B}$',
                          'mean_exp__sd_%.2f' % (experiment.z_value, ))
+    #  plt.show()
+    #  plt.savefig('mean_figure.png')
 
 def handle_sd_experiments():
     parsers = [
@@ -253,8 +259,11 @@ def handle_sd_experiments():
     data_frame = get_sd_plane_data_frame()
     sd_experiment_groups = [PlaneExperiment(data_frame, 'Mean', val, filter_label_func=filter_label_func_35) for val in [5, 10, 15]]
 
+    i = 0
     for experiment in sd_experiment_groups:
         for parser in parsers:
+            #  i += 1
+            #  plt.subplot(len(sd_experiment_groups), len(parsers), i)
             try:
                 print('z_value=%s'%  (experiment.z_value, ))
                 parser.parse(experiment.data,
@@ -266,8 +275,10 @@ def handle_sd_experiments():
                              'sd_exp__mean_%d' % (experiment.z_value, ))
             except Exception as e:
                 print('Error: %s' % (e, ))
-                raise
                 continue
+
+    #  plt.show()
+    #  plt.savefig('sd_figure.png')
 
 def main():
     handle_mean_experiments()
