@@ -154,7 +154,7 @@ class DataParser(object):
         # plot decision boundary and margins
         ax.contour(XX * factor, YY * factor, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                    linestyles=['--', '-', '--'])
-        plt.savefig('%s_.png' % (experiment_name, ))
+        plt.savefig('%s.png' % (experiment_name, ))
         plt.show()
 
 
