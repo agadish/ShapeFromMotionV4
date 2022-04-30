@@ -89,83 +89,36 @@ class DataParser(object):
     def __init__(self):
         super(DataParser, self).__init__()
 
-    def parse(self, data, labels, experiments_len):
+    def parse(self, data, labels):
         raise NotImplementedError()
 
-    #  def create_plot(self, X, y, clf):
-    #      plt.clf()
-    #
-    #      # plot the data points
-    #      plt.scatter(X[:, 0], X[:, 1], c=y, s=30, cmap=plt.cm.PiYG)
-    #
-    #      # plot the decision function
-    #      plt.xlim([0, np.max(X) + 1])
-    #      plt.ylim([0, np.max(X) + 1])
-    #      ax = plt.gca()
-    #      xlim = ax.get_xlim()
-    #      ylim = ax.get_ylim()
-    #
-    #      # create grid to evaluate model
-    #      xx = np.linspace(xlim[0] - 2, xlim[1] + 2, 30)
-    #      yy = np.linspace(ylim[0] - 2, ylim[1] + 2, 30)
-    #      YY, XX = np.meshgrid(yy, xx)
-    #      xy = np.vstack([XX.ravel(), YY.ravel()]).T
-    #      Z = clf.decision_function(xy).reshape(XX.shape)
-    #
-    #      # plot decision boundary and margins
-    #      ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
-    #                 linestyles=['--', '-', '--'])
-    def create_plot(self, X, y, clf, i, experiments_len, classifiers_len):
-        ax = plt.subplot(experiments_len, classifiers_len + 1, i + 1)
-        try:
-            clf.fit(X, y)
-            score = clf.score(X, y)
+    def create_plot(self, X, y, clf):
+        plt.clf()
 
-            # Plot the decision boundary. For that, we will assign a color to each
-            # point in the mesh [x_min, x_max]x[y_min, y_max].
-            if hasattr(clf, "decision_function"):
-                Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-            else:
-                Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+        # plot the data points
+        plt.scatter(X[:, 0], X[:, 1], c=y, s=30, cmap=plt.cm.PiYG)
 
-            # Put the result into a color plot
-            Z = Z.reshape(xx.shape)
-            ax.contourf(xx, yy, Z, cmap=cm, alpha=0.8)
+        # plot the decision function
+        plt.xlim([0, np.max(X) + 1])
+        plt.ylim([0, np.max(X) + 1])
+        ax = plt.gca()
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
 
-            # Plot the training points
-            ax.scatter(
-                X[:, 0], X[:, 1], c=y, cmap=cm_bright, edgecolors="k"
-            )
-            # Plot the testing points
-            ax.scatter(
-                X[:, 0],
-                X[:, 1],
-                c=y,
-                cmap=cm_bright,
-                edgecolors="k",
-                alpha=0.6,
-            )
+        # create grid to evaluate model
+        xx = np.linspace(xlim[0] - 2, xlim[1] + 2, 30)
+        yy = np.linspace(ylim[0] - 2, ylim[1] + 2, 30)
+        YY, XX = np.meshgrid(yy, xx)
+        xy = np.vstack([XX.ravel(), YY.ravel()]).T
+        Z = clf.decision_function(xy).reshape(XX.shape)
 
-            ax.set_xlim(xx.min(), xx.max())
-            ax.set_ylim(yy.min(), yy.max())
-            ax.set_xticks(())
-            ax.set_yticks(())
-            #  if ds_cnt == 0:
-            #      ax.set_title(name)
-            ax.text(
-                xx.max() - 0.3,
-                yy.min() + 0.3,
-                ("%.2f" % score).lstrip("0"),
-                size=15,
-                horizontalalignment="right",
-            )
-        except Exception as e:
-            print('fit error: %s' % (e, ))
-
+        # plot decision boundary and margins
+        ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
+                   linestyles=['--', '-', '--'])
 
 
 class SVMParser(DataParser):
-    def parse(self, data, labels, experiments_len):
+    def parse(self, data, labels):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -178,7 +131,7 @@ class SVMParser(DataParser):
         for i in range(len(kernel_types)):
             svc = svm.SVC(C=c_value, kernel=kernel_types[i])
             trained_svc = svc.fit(data, labels)
-            self.create_plot(data, labels, trained_svc, i, experiments_len, len(kernel_types))
+            self.create_plot(data, labels, trained_svc)
             plt.show()
             result[i] = trained_svc.n_support_
 
@@ -197,6 +150,17 @@ def get_sd_plane_data_frame():
     return data_frame
 
 
+######## Experiments Processor ################
+class ExperimentProcessor(object):
+    def __init__(self, parsers : list):
+        self._parsers = parsers
+
+    def process(self, data_frames):
+        for parser in self._parsers:
+            parser.set_data_frames(self._experiment_data)
+            parser.parse()
+
+
 def handle_mean_experiments():
     parsers = [SVMParser()]
 
@@ -206,7 +170,7 @@ def handle_mean_experiments():
 
     for experiment in mean_experiment_groups:
         for parser in parsers:
-            parser.parse(experiment.data, experiment.labels, len(mean_experiment_groups))
+            parser.parse(experiment.data, experiment.labels)
 
 def handle_sd_experiments():
     parsers = [SVMParser()]
@@ -215,7 +179,7 @@ def handle_sd_experiments():
 
     for experiment in sd_experiment_groups:
         for parser in parsers:
-            parser.parse(experiment.data, experiment.labels, en(sd_experiment_groups))
+            parser.parse(experiment())
 
 def main():
     handle_mean_experiments()
