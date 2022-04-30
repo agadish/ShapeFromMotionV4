@@ -9,3 +9,5 @@ _tmp*
 _old*
 experiment/Exp
 *.asv
+*.pyc
+*#
