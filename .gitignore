@@ -11,3 +11,4 @@ experiment/Exp
 *.asv
 *.pyc
 *#
+*.png
