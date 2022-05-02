@@ -25,7 +25,6 @@ sfm_experiment4(Name, datestr(now, 30), Exp_Type);
 sfm_experiment4(Name, datestr(now, 30), Exp_Type);       
 sfm_experiment4(Name, datestr(now, 30), Exp_Type); 
 sfm_experiment4(Name, datestr(now, 30), Exp_Type);       
-sfm_experiment4(Name, datestr(now, 30), Exp_Type);
 
 %Experiment 3- Mean and SD combined
          
