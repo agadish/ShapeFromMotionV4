@@ -9,6 +9,7 @@ function main(varargin)
         mkdir('results');
     end
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     
     % Mean
 %    for experiment_data = mean_experiment_data()
@@ -50,6 +51,8 @@ function main(varargin)
         toc(Time);
     end
 =======
+=======
+>>>>>>> Stashed changes
 %      for obj_mean = [[1.5, 0.1];  [2, 0.7] ; [0.3, 0.9] ; [1.3, 0.3]; [2.5, 1]; [0.1, 1], 0.7]
     for obj_mean = [[8, 10] ; [10, 12] ; [8, 14]; [5.5, 6.5]; [6.6, 6.5]; [10, 7.5]]'
         obj1_mean = obj_mean(1);
@@ -77,5 +80,8 @@ function main(varargin)
 %                 end
         end
      end
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 end
