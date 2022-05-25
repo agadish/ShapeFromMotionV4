@@ -41,6 +41,7 @@ class PlaneExperiment(object):
             used_y = [y[i] for i in used_indices]
 
             used_labels = np.array([filter_label_func(labels[i]) for i in used_indices])
+            used_labels_raw = np.array([labels[i] for i in used_indices])
 
             # Save removed dots
             removed_indices = [i for i in range(len(labels))
@@ -52,6 +53,7 @@ class PlaneExperiment(object):
 
         self._data = np.array([(used_x[i] / max_data, used_y[i] / max_data, ) for i in range(len(used_x))])
         self._labels = used_labels
+        self._labels_raw = used_labels_raw
         self._removed_data = np.array([(removed_x[i] / max_data, removed_y[i] / max_data, ) for i in range(len(removed_x))])
         self._removed_labels = removed_labels
 
@@ -81,6 +83,10 @@ class PlaneExperiment(object):
         return self._data_frame[column_title]
 
     @property
+    def labels_raw(self):
+        return self._labels_raw
+
+    @property
     def max_data(self):
         return self._max_data
 
@@ -108,16 +114,68 @@ class DataParser(object):
     def __init__(self):
         super(DataParser, self).__init__()
 
-    def parse(self, data, labels, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
         raise NotImplementedError()
 
-    def create_plot(self, X, y, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
+    def create_plot(self, X, y, y_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
         # plot the data points
         plt.clf()
         if removed_X.size:
             plt.scatter(removed_X[:, 0] * factor, removed_X[:, 1] * factor, c=['grey'] * len(removed_X), marker='x', s=70, cmap=plt.cm.PiYG)
 
-        plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=y, s=70, cmap=plt.cm.PiYG)
+        def label_value_to_color(val):
+            if val < 0.07:
+                return '#FF0000'
+            elif 0.07 <= val < 0.14:
+                return '#DF0000'
+            elif 0.14 <= val < 0.21:
+                return '#BF0000'
+            elif 0.21 <= val < 0.28:
+                return '#9F0000'
+            elif 0.28 <= val <= 0.35:
+                return '#7F0000'
+
+            if 0.65 <= val < 0.72:
+                return '#007F00'
+            if 0.72 <= val < 0.79:
+                return '#009F00'
+            if 0.79 <= val < 0.86:
+                return '#00BF00'
+            if 0.86 <= val < 0.93:
+                return '#00DF00'
+            if 0.93 <= val:
+                return '#00FF00'
+            import ipdb ; ipdb.set_trace()
+            return '#0000FF'
+
+        def label_value_size(val):
+            if val < 0.07:
+                return 20
+            elif 0.07 <= val < 0.14:
+                return 40
+            elif 0.14 <= val < 0.21:
+                return 60
+            elif 0.21 <= val < 0.28:
+                return 80
+            elif 0.28 <= val <= 0.35:
+                return 100
+
+            if 0.65 <= val < 0.72:
+                return 100
+            if 0.72 <= val < 0.79:
+                return 80
+            if 0.79 <= val < 0.86:
+                return 60
+            if 0.86 <= val < 0.93:
+                return 40
+            if 0.93 <= val:
+                return 20
+            import ipdb ; ipdb.set_trace()
+            return 90
+
+        colors = [label_value_to_color(t) for t in y_raw]
+        sizes = [label_value_size(t) for t in y_raw]
+        plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=colors, s=sizes, cmap=plt.cm.PiYG)
 
         # plot the decision function
         max_axis_val = 0
@@ -167,7 +225,7 @@ class SVCParser(DataParser):
         self._kernel_type = kernel_type
         self._gamma = gamma
 
-    def parse(self, data, labels, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -187,6 +245,7 @@ class SVCParser(DataParser):
         self.create_plot(
             data,
             labels,
+            labels_raw,
             removed_data,
             factor,
             trained_svc,
@@ -199,7 +258,7 @@ class SVCParser(DataParser):
         return trained_svc.n_support_
 
 class SVRParser(DataParser):
-    def parse(self, data, labels, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -215,6 +274,7 @@ class SVRParser(DataParser):
             self.create_plot(
                 data,
                 labels,
+                labels_raw,
                 removed_data,
                 factor,
                 trained_svr,
@@ -255,6 +315,7 @@ def handle_mean_experiments():
             #  plt.subplot(len(mean_experiment_groups), len(parsers), i)
             parser.parse(experiment.data,
                          experiment.labels,
+                         experiment.labels_raw,
                          experiment._removed_data,
                          experiment.max_data,
                          '$\sigma=%.2f$' % (experiment.z_value ,),
@@ -276,9 +337,9 @@ def handle_sd_experiments():
             #  i += 1
             #  plt.subplot(len(sd_experiment_groups), len(parsers), i)
             try:
-                print('z_value=%s'%  (experiment.z_value, ))
                 parser.parse(experiment.data,
                              experiment.labels,
+                             experiment.labels_raw,
                              experiment._removed_data,
                              experiment.max_data,
                              '$\mu=%.2f$' % (experiment.z_value ,),
