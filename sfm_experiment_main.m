@@ -18,16 +18,21 @@ Name = 'Zamiex';
 %Exp_Type = 2;       
 %sfm_experiment3(Name, datestr(now, 30), Exp_Type); 
 
-%Experiment 2- Focus on SD
+%Experiment 2-Mean and SD seperately
+
+ Exp_Type = 1;
+ sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+ sfm_experiment5(Name, datestr(now, 30), Exp_Type);    
+ sfm_experiment5(Name, datestr(now, 30), Exp_Type);       
+ sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+ sfm_experiment5(Name, datestr(now, 30), Exp_Type);  
+
 Exp_Type = 2;
-%sfm_experiment4(Name, datestr(now, 30), Exp_Type);       
-%sfm_experiment4(Name, datestr(now, 30), Exp_Type); 
-%sfm_experiment4(Name, datestr(now, 30), Exp_Type);       
-%sfm_experiment4(Name, datestr(now, 30), Exp_Type); 
-%sfm_experiment4(Name, datestr(now, 30), Exp_Type);    
-sfm_experiment4(Name, datestr(now, 30), Exp_Type);       
-sfm_experiment4(Name, datestr(now, 30), Exp_Type); 
-sfm_experiment4(Name, datestr(now, 30), Exp_Type);  
+sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+sfm_experiment5(Name, datestr(now, 30), Exp_Type);    
+sfm_experiment5(Name, datestr(now, 30), Exp_Type);       
+sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+sfm_experiment5(Name, datestr(now, 30), Exp_Type);  
 
 %Experiment 3- Mean and SD combined
          
