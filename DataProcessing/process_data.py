@@ -150,26 +150,28 @@ class DataParser(object):
 
         def label_value_size(val):
             if val < 0.07:
-                return 20
+                return 30
             elif 0.07 <= val < 0.14:
-                return 40
-            elif 0.14 <= val < 0.21:
                 return 60
+            elif 0.14 <= val < 0.21:
+                return 120
             elif 0.21 <= val < 0.28:
-                return 80
+                return 240
             elif 0.28 <= val <= 0.35:
-                return 100
+                print('wa')
+                return 480
 
             if 0.65 <= val < 0.72:
-                return 100
+                print('wa')
+                return 480
             if 0.72 <= val < 0.79:
-                return 80
+                return 240
             if 0.79 <= val < 0.86:
-                return 60
+                return 120
             if 0.86 <= val < 0.93:
-                return 40
+                return 60
             if 0.93 <= val:
-                return 20
+                return 30
             import ipdb ; ipdb.set_trace()
             return 90
 
