@@ -10,43 +10,43 @@ function main(varargin)
     end
     
     % Mean
-    for experiment_data = mean_experiment_data()
-        obj1_mean = experiment_data(1);
-        obj2_mean = experiment_data(2);
-        obj_sd = experiment_data(3);
-
-        % in case main was called without arguments
-        config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/mean_exp', obj1_mean, obj_sd, obj2_mean, obj_sd);
-        load(config_file_name);
-
-        if isfile(VideoConfig.NAME)
-            fprintf('file already exists: %s\n', VideoConfig.NAME)
-            continue;
-        else
-        end
-
-        Stimuli_v3(config_file_name);
-        toc(Time);
-    end
-
-    % SD
-%     for experiment_data = sd_experiment_data()
-%         obj1_sd = experiment_data(1);
-%         obj2_sd = experiment_data(2);
-%         obj_mean = experiment_data(3);
-%         % in case main was called without arguments      
-%         config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/sd_exp', obj_mean, obj1_sd, obj_mean, obj2_sd);
+%     for experiment_data = mean_experiment_data()
+%         obj1_mean = experiment_data(1);
+%         obj2_mean = experiment_data(2);
+%         obj_sd = experiment_data(3);
+% 
+%         % in case main was called without arguments
+%         config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/mean_exp', obj1_mean, obj_sd, obj2_mean, obj_sd);
 %         load(config_file_name);
-%         
+% 
 %         if isfile(VideoConfig.NAME)
 %             fprintf('file already exists: %s\n', VideoConfig.NAME)
 %             continue;
-%         else    
-%             fprintf("file doesn't exists: %s\n", VideoConfig.NAME)
+%         else
 %         end
-%         
+% 
 %         Stimuli_v3(config_file_name);
 %         toc(Time);
 %     end
+
+    % SD
+     for experiment_data = sd_experiment_data()
+         obj1_sd = experiment_data(1);
+         obj2_sd = experiment_data(2);
+         obj_mean = experiment_data(3);
+         % in case main was called without arguments      
+         config_file_name = Configuration(rand_flag,IsObjVideo,debug_mode, 'experiment/sd_exp', obj_mean, obj1_sd, obj_mean, obj2_sd);
+         load(config_file_name);
+         
+         if isfile(VideoConfig.NAME)
+             fprintf('file already exists: %s\n', VideoConfig.NAME)
+             continue;
+         else    
+             fprintf("file doesn't exists: %s\n", VideoConfig.NAME)
+         end
+         
+         Stimuli_v3(config_file_name);
+         toc(Time);
+     end
 
 end

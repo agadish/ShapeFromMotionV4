@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn import svm
 
-DATA_PATH = './results.xlsx'
+DATA_PATH = './results_exp2.xlsx'
 
 RESULTS_MEAN_PLANE_EXPERIMENT_INDEX = 0
 RESULTS_SD_PLANE_EXPERIMENT_INDEX = 1
@@ -103,9 +103,9 @@ def filter_label_func_minus1_to_1(data):
     return (2 * data) -1
 
 def filter_label_func_35(data):
-    if 0.35 >= data:
+    if 0.35 > data:
         return -1
-    elif 0.65 <= data:
+    elif 0.65 < data:
         return 1
     return None
 
@@ -132,10 +132,10 @@ class DataParser(object):
                 return '#BF0000'
             elif 0.21 <= val < 0.28:
                 return '#9F0000'
-            elif 0.28 <= val <= 0.35:
+            elif 0.28 <= val < 0.35:
                 return '#7F0000'
 
-            if 0.65 <= val < 0.72:
+            if 0.65 < val < 0.72:
                 return '#007F00'
             if 0.72 <= val < 0.79:
                 return '#009F00'
@@ -157,11 +157,11 @@ class DataParser(object):
                 return 120
             elif 0.21 <= val < 0.28:
                 return 240
-            elif 0.28 <= val <= 0.35:
+            elif 0.28 <= val < 0.35:
                 print('wa')
                 return 480
 
-            if 0.65 <= val < 0.72:
+            if 0.65 < val < 0.72:
                 print('wa')
                 return 480
             if 0.72 <= val < 0.79:
@@ -308,7 +308,7 @@ def handle_mean_experiments():
     parsers = [SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
 
     data_frame = get_mean_plane_data_frame()
-    mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.25, 0.8, 1.2]]
+    mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.1, 0.4, 0.7, 1.5]]
 
     i = 0
     for experiment in mean_experiment_groups:

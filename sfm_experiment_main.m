@@ -3,7 +3,7 @@ clear all;
 clc;
 
 %Please enter your name
-Name = 'Zamiex';
+Name = 'Orr';
  
 % We will perform experiment type 1 twice, and type 2 twice
 % When you're ready please press F5           
@@ -20,19 +20,19 @@ Name = 'Zamiex';
 
 %Experiment 2-Mean and SD seperately
 
- Exp_Type = 1;
+  Exp_Type = 1;
+  sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+  sfm_experiment5(Name, datestr(now, 30), Exp_Type);    
+  sfm_experiment5(Name, datestr(now, 30), Exp_Type);       
+  sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
+  sfm_experiment5(Name, datestr(now, 30), Exp_Type);  
+
+ Exp_Type = 2;
  sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
  sfm_experiment5(Name, datestr(now, 30), Exp_Type);    
  sfm_experiment5(Name, datestr(now, 30), Exp_Type);       
  sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
  sfm_experiment5(Name, datestr(now, 30), Exp_Type);  
-
-Exp_Type = 2;
-sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
-sfm_experiment5(Name, datestr(now, 30), Exp_Type);    
-sfm_experiment5(Name, datestr(now, 30), Exp_Type);       
-sfm_experiment5(Name, datestr(now, 30), Exp_Type); 
-sfm_experiment5(Name, datestr(now, 30), Exp_Type);  
 
 %Experiment 3- Mean and SD combined
          
