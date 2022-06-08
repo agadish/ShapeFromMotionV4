@@ -9,6 +9,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 import pandas as pd
 from sklearn import svm
 
@@ -34,6 +35,7 @@ class PlaneExperiment(object):
         self._z_value = z_value[0]
 
         labels = np.array(self._get_column(3))
+        labels_std = np.array(self._get_column(4))
         if filter_label_func:
             used_indices = [i for i in range(len(labels))
                        if filter_label_func(labels[i]) is not None]
@@ -41,7 +43,9 @@ class PlaneExperiment(object):
             used_y = [y[i] for i in used_indices]
 
             used_labels = np.array([filter_label_func(labels[i]) for i in used_indices])
+            used_labels_std = np.array([filter_label_func(labels_std[i]) for i in used_indices])
             used_labels_raw = np.array([labels[i] for i in used_indices])
+            used_labels_std_raw = np.array([labels_std[i] for i in used_indices])
 
             # Save removed dots
             removed_indices = [i for i in range(len(labels))
@@ -53,8 +57,11 @@ class PlaneExperiment(object):
 
         self._data = np.array([(used_x[i] / max_data, used_y[i] / max_data, ) for i in range(len(used_x))])
         self._labels = used_labels
+        self._labels_std = used_labels_std
         self._labels_raw = used_labels_raw
+        self._labels_std_raw = used_labels_std_raw
         self._removed_data = np.array([(removed_x[i] / max_data, removed_y[i] / max_data, ) for i in range(len(removed_x))])
+        self._removed_labels = removed_labels
         self._removed_labels = removed_labels
 
     def _get_column(self, index):
@@ -68,6 +75,10 @@ class PlaneExperiment(object):
     @property
     def labels(self):
         return self._labels
+
+    @property
+    def labels_std(self):
+        return self._labels_std
 
     @property
     def z_value(self):
@@ -87,68 +98,60 @@ class PlaneExperiment(object):
         return self._labels_raw
 
     @property
+    def labels_std_raw(self):
+        return self._labels_std_raw
+
+    @property
     def max_data(self):
         return self._max_data
 
-    def build_data(self):
-        x = self.x_dots
-        y = self.y_dots
-        assert(len(x) == len(y))
-        return np.array([(x[i], y[i]) for i in range(len(x))])
-
-    def build_labels(self):
-        return np.array(self.label_dots)
 
 def filter_label_func_minus1_to_1(data):
     return (2 * data) -1
 
 def filter_label_func_35(data):
-    if 0.35 > data:
+    if 0.35 >= data:
         return -1
-    elif 0.65 < data:
+    elif 0.65 <= data:
         return 1
     return None
 
 
-class DataParser(object):
+class DummyParser(object):
     def __init__(self):
-        super(DataParser, self).__init__()
+        super(DummyParser, self).__init__()
 
-    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
-        raise NotImplementedError()
+    def parse(self, data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+        self.create_plot(data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, None, '', xlabel, ylabel, experiment_name)
 
-    def create_plot(self, X, y, y_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
+    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
         # plot the data points
         plt.clf()
         if removed_X.size:
-            plt.scatter(removed_X[:, 0] * factor, removed_X[:, 1] * factor, c=['grey'] * len(removed_X), marker='x', s=70, cmap=plt.cm.PiYG)
+            plt.scatter(removed_X[:, 0] * factor, removed_X[:, 1] * factor, c='black', marker='o', s=70, cmap=plt.cm.PiYG)
+        scatter = plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c='black', s=70, marker='o', cmap=plt.cm.PiYG)
+
 
         def label_value_to_color(val):
-            if val < 0.07:
+            q = 0.35 / 3
+            if val < 0.35 / 3:
                 return '#FF0000'
-            elif 0.07 <= val < 0.14:
-                return '#DF0000'
-            elif 0.14 <= val < 0.21:
-                return '#BF0000'
-            elif 0.21 <= val < 0.28:
-                return '#9F0000'
-            elif 0.28 <= val < 0.35:
-                return '#7F0000'
+            elif 0.35 / 3 <= val < 0.35 * 2 / 3:
+                return '#801010'
+            elif 0.35 * 2 / 3 <= val < 0.35:
+                return '#604040'
 
-            if 0.65 < val < 0.72:
-                return '#007F00'
-            if 0.72 <= val < 0.79:
-                return '#009F00'
-            if 0.79 <= val < 0.86:
-                return '#00BF00'
-            if 0.86 <= val < 0.93:
-                return '#00DF00'
-            if 0.93 <= val:
+            if 1 - 3 * q < val <= 1 - 2 * q:
+                return '#406040'
+            if 1 - 2 * q < val <= 1 - q:
+                return '#108010'
+            if 1 - q < val:
                 return '#00FF00'
+
             import ipdb ; ipdb.set_trace()
             return '#0000FF'
 
-        def label_value_size(val):
+        def label_std_value_size(std):
             if val < 0.07:
                 return 30
             elif 0.07 <= val < 0.14:
@@ -158,11 +161,9 @@ class DataParser(object):
             elif 0.21 <= val < 0.28:
                 return 240
             elif 0.28 <= val < 0.35:
-                print('wa')
                 return 480
 
             if 0.65 < val < 0.72:
-                print('wa')
                 return 480
             if 0.72 <= val < 0.79:
                 return 240
@@ -175,9 +176,32 @@ class DataParser(object):
             import ipdb ; ipdb.set_trace()
             return 90
 
-        colors = [label_value_to_color(t) for t in y_raw]
-        sizes = [label_value_size(t) for t in y_raw]
-        plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=colors, s=sizes, cmap=plt.cm.PiYG)
+        colors = ['grey' for t in y_raw]
+        sizes = [60 for t in y_std_raw]
+        #  legend_handles = [
+        #          mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=5, label='$0\leq x<0.12$'),
+        #          mlines.Line2D([], [], color='#801010', linestyle='None', marker='o', markersize=5, label='$0.12\leq x<0.24$'),
+        #          mlines.Line2D([], [], color='#604040', linestyle='None', marker='o', markersize=5, label='$0.24\leq x<0.35$'),
+        #          mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=5, label='omitted result'),
+        #          mlines.Line2D([], [], color='#406040', linestyle='None', marker='o', markersize=5, label='$0.65<x\leq 0.76$'),
+        #          mlines.Line2D([], [], color='#108010', linestyle='None', marker='o', markersize=5, label='$0.76<x\leq 0.88$'),
+        #          mlines.Line2D([], [], color='#00F000', linestyle='None', marker='o', markersize=5, label='$0.88<x\leq 1$'),
+        #          ]
+        #  #  legend1 = plt.legend(handles=legend_handles, loc=2)
+        #  legend_handles2 = [
+        #          mlines.Line2D([], [], color='#808080', linestyle='None', marker='o', markersize=12, label='Most reliable result (low stdev)'),
+        #          mlines.Line2D([], [], color='#808080', linestyle='None', marker='o', markersize=6, label='Unrelable results (high stdev)'),
+        #          ]
+        #  legend2 = plt.legend(handles=legend_handles2, loc=4)
+        #  import ipdb ; ipdb.set_trace()
+        # produce a legend with the unique colors from the scatter
+        #  legend1 = ax.legend(*scatter.legend_elements(),
+        #                      loc="lower left", title="Classes")
+        #  ax.add_artist(legend1)
+        #
+        #  # produce a legend with a cross section of sizes from the scatter
+        #  handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
+        #  legend2 = ax.legend(handles, labels, loc="upper right", title="Sizes")
 
         # plot the decision function
         max_axis_val = 0
@@ -191,6 +215,112 @@ class DataParser(object):
         plt.ylim([0, max_axis_val * 1.05])
         plt.title(title)
         ax = plt.gca()
+        #  ax.add_artist(legend1)
+        #  ax.add_artist(legend2)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
+
+        # create grid to evaluate model
+        xx = np.linspace(xlim[0] - 2, xlim[1] + 2, 30) / factor
+        yy = np.linspace(ylim[0] - 2, ylim[1] + 2, 30) / factor
+        YY, XX = np.meshgrid(yy, xx)
+        xy = np.vstack([XX.ravel(), YY.ravel()]).T
+        #  import ipdb ; ipdb.set_trace()
+        #  if hasattr(clf, 'decision_function'):
+        #      Z = clf.decision_function(xy).reshape(XX.shape)
+        #  elif hasattr(clf, 'predict'):
+        #      Z = clf.predict(xy).reshape(XX.shape)
+        #  elif hasattr(clf, 'predict_proba'):
+        #      Z = clf.predict_proba(xy).reshape(XX.shape)
+        #  else:
+        #      raise Exception('Set decision function manually')
+        #
+        #  # plot decision boundary and margins
+        #  ax.contour(XX * factor, YY * factor, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
+        #             linestyles=['--', '-', '--'])
+        plt.gcf().set_size_inches((8, 6, ))
+        plt.savefig('%s.png' % (experiment_name, ))
+        plt.show()
+class DataParser(object):
+    def __init__(self):
+        super(DataParser, self).__init__()
+
+    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+        raise NotImplementedError()
+
+    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
+        # plot the data points
+        plt.clf()
+        if removed_X.size:
+            plt.scatter(removed_X[:, 0] * factor, removed_X[:, 1] * factor, c=['grey'] * len(removed_X), marker='x', s=70, cmap=plt.cm.PiYG)
+
+        def label_value_to_color(val):
+            q = 0.35 / 3
+            if val < 0.35 / 3:
+                return '#FF0000'
+            elif 0.35 / 3 <= val < 0.35 * 2 / 3:
+                return '#801010'
+            elif 0.35 * 2 / 3 <= val < 0.35:
+                return '#604040'
+
+            if 1 - 3 * q < val <= 1 - 2 * q:
+                return '#406040'
+            if 1 - 2 * q < val <= 1 - q:
+                return '#108010'
+            if 1 - q < val:
+                return '#00FF00'
+
+            import ipdb ; ipdb.set_trace()
+            return '#0000FF'
+
+        def label_std_value_size(val):
+            print(val)
+            return int(30 / val)
+
+        colors = [label_value_to_color(t) for t in y_raw]
+        sizes = [label_std_value_size(t) for t in y_std_raw]
+        scatter = plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=colors, s=sizes, cmap=plt.cm.PiYG)
+        legend_handles = [
+                mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=9, label='$0\leq x<0.12$ (certain)'),
+                mlines.Line2D([], [], color='#801010', linestyle='None', marker='o', markersize=9, label='$0.12\leq x<0.24$'),
+                mlines.Line2D([], [], color='#604040', linestyle='None', marker='o', markersize=9, label='$0.24\leq x<0.35$'),
+                mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=9, label='omitted'),
+                mlines.Line2D([], [], color='#406040', linestyle='None', marker='o', markersize=9, label='$0.65<x\leq 0.76$'),
+                mlines.Line2D([], [], color='#108010', linestyle='None', marker='o', markersize=9, label='$0.76<x\leq 0.88$'),
+                mlines.Line2D([], [], color='#00F000', linestyle='None', marker='o', markersize=9, label='$0.88<x\leq 1$ (certain)'),
+                ]
+        legend1 = plt.legend(handles=legend_handles, loc=2)
+        legend_handles2 = [
+                mlines.Line2D([], [], color='#808080', linestyle='None', marker='o', markersize=12, label='Reliable (low stdev)'),
+                mlines.Line2D([], [], color='#808080', linestyle='None', marker='o', markersize=6, label='Unreliable (high stdev)'),
+                ]
+        legend2 = plt.legend(handles=legend_handles2, loc=4)
+        #  import ipdb ; ipdb.set_trace()
+        # produce a legend with the unique colors from the scatter
+        #  legend1 = ax.legend(*scatter.legend_elements(),
+        #                      loc="lower left", title="Classes")
+        #  ax.add_artist(legend1)
+        #
+        #  # produce a legend with a cross section of sizes from the scatter
+        #  handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
+        #  legend2 = ax.legend(handles, labels, loc="upper right", title="Sizes")
+
+        # plot the decision function
+        max_axis_val = 0
+        if X.size:
+            max_axis_val = max(max_axis_val, np.max(X))
+        if removed_X.size:
+            max_axis_val = max(max_axis_val, np.max(removed_X))
+        max_axis_val *= factor
+
+        plt.xlim([0, max_axis_val * 1.05])
+        plt.ylim([0, max_axis_val * 1.05])
+        plt.title(title)
+        ax = plt.gca()
+        ax.add_artist(legend1)
+        ax.add_artist(legend2)
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         xlim = ax.get_xlim()
@@ -214,6 +344,7 @@ class DataParser(object):
         # plot decision boundary and margins
         ax.contour(XX * factor, YY * factor, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                    linestyles=['--', '-', '--'])
+        plt.gcf().set_size_inches((8, 6, ))
         plt.savefig('%s.png' % (experiment_name, ))
         plt.show()
 
@@ -227,7 +358,7 @@ class SVCParser(DataParser):
         self._kernel_type = kernel_type
         self._gamma = gamma
 
-    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -248,6 +379,8 @@ class SVCParser(DataParser):
             data,
             labels,
             labels_raw,
+            labels_std,
+            labels_std_raw,
             removed_data,
             factor,
             trained_svc,
@@ -260,7 +393,7 @@ class SVCParser(DataParser):
         return trained_svc.n_support_
 
 class SVRParser(DataParser):
-    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -277,6 +410,8 @@ class SVRParser(DataParser):
                 data,
                 labels,
                 labels_raw,
+                labels_std,
+                labels_std_raw,
                 removed_data,
                 factor,
                 trained_svr,
@@ -305,10 +440,12 @@ def get_sd_plane_data_frame():
 
 
 def handle_mean_experiments():
+    #  parsers = [DummyParser()]#SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
     parsers = [SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
 
     data_frame = get_mean_plane_data_frame()
     mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.1, 0.4, 0.7, 1.5]]
+    #  mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.25, 0.8, 1.2]]
 
     i = 0
     for experiment in mean_experiment_groups:
@@ -318,6 +455,8 @@ def handle_mean_experiments():
             parser.parse(experiment.data,
                          experiment.labels,
                          experiment.labels_raw,
+                         experiment.labels_std,
+                         experiment.labels_std_raw,
                          experiment._removed_data,
                          experiment.max_data,
                          '$\sigma=%.2f$' % (experiment.z_value ,),
@@ -342,6 +481,8 @@ def handle_sd_experiments():
                 parser.parse(experiment.data,
                              experiment.labels,
                              experiment.labels_raw,
+                             experiment.labels_std,
+                             experiment.labels_std_raw,
                              experiment._removed_data,
                              experiment.max_data,
                              '$\mu=%.2f$' % (experiment.z_value ,),
