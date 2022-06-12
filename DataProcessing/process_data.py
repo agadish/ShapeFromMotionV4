@@ -340,7 +340,6 @@ class DataParser(object):
                    linestyles=['--', '-', '--'])
         plt.gcf().set_size_inches((8, 6, ))
         plt.savefig('%s.png' % (experiment_name, ))
-        print(clf.intercept_ / factor)
         if hasattr(clf, 'coef_'):
             w = clf.coef_[0]
             margin_width = 2/ np.linalg.norm(w / factor)
@@ -531,7 +530,7 @@ def handle_sd_experiments():
                              experiment.labels_std_raw,
                              experiment._removed_data,
                              experiment.max_data,
-                             '$\mu=%.2f$' % (experiment.z_value ,),
+                             experiment.z_value,
                              '$\sigma_{A}$',
                              '$\sigma_{B}$',
                              'sd_exp__mean_%d' % (experiment.z_value, ))
@@ -545,7 +544,7 @@ def handle_sd_experiments():
 
 def main():
     handle_mean_experiments()
-    #  handle_sd_experiments()
+    handle_sd_experiments()
 
 
 
