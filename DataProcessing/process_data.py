@@ -12,6 +12,10 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import pandas as pd
 from sklearn import svm
+from matplotlib.ticker import MultipleLocator
+from matplotlib.ticker import MaxNLocator
+from scipy import stats
+
 
 DATA_PATH = './results_exp2.xlsx'
 
@@ -121,10 +125,10 @@ class DummyParser(object):
     def __init__(self):
         super(DummyParser, self).__init__()
 
-    def parse(self, data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
-        self.create_plot(data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, None, '', xlabel, ylabel, experiment_name)
+    def parse(self, data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, sigma, xlabel='', ylabel='', experiment_name=''):
+        self.create_plot(data, labels, labels_raw, labels_sd, labels_sd_raw, removed_data, factor, None, sigma, '', xlabel, ylabel, experiment_name)
 
-    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
+    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, sigma, title, xlabel, ylabel, experiment_name=''):
         # plot the data points
         plt.clf()
         if removed_X.size:
@@ -246,11 +250,13 @@ class DummyParser(object):
 class DataParser(object):
     def __init__(self):
         super(DataParser, self).__init__()
+        self._sigma_values = list()
+        self._margin_width_values = list()
 
-    def parse(self, data, labels, labels_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, removed_data, factor, sigma, xlabel='', ylabel='', experiment_name=''):
         raise NotImplementedError()
 
-    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, title, xlabel, ylabel, experiment_name=''):
+    def create_plot(self, X, y, y_raw, y_std, y_std_raw, removed_X, factor, clf, sigma, title, xlabel, ylabel, experiment_name=''):
         # plot the data points
         plt.clf()
         if removed_X.size:
@@ -276,14 +282,13 @@ class DataParser(object):
             return '#0000FF'
 
         def label_std_value_size(val):
-            print(val)
             return int(30 / val)
 
         colors = [label_value_to_color(t) for t in y_raw]
         sizes = [label_std_value_size(t) for t in y_std_raw]
         scatter = plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=colors, s=sizes, cmap=plt.cm.PiYG)
         legend_handles = [
-                mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=9, label='$0\leq x<0.12$ (certain)'),
+                mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=9, label='$0\leq x<y.12$ (certain)'),
                 mlines.Line2D([], [], color='#801010', linestyle='None', marker='o', markersize=9, label='$0.12\leq x<0.24$'),
                 mlines.Line2D([], [], color='#604040', linestyle='None', marker='o', markersize=9, label='$0.24\leq x<0.35$'),
                 mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=9, label='omitted'),
@@ -297,15 +302,6 @@ class DataParser(object):
                 mlines.Line2D([], [], color='#808080', linestyle='None', marker='o', markersize=6, label='Unreliable (high stdev)'),
                 ]
         legend2 = plt.legend(handles=legend_handles2, loc=4)
-        #  import ipdb ; ipdb.set_trace()
-        # produce a legend with the unique colors from the scatter
-        #  legend1 = ax.legend(*scatter.legend_elements(),
-        #                      loc="lower left", title="Classes")
-        #  ax.add_artist(legend1)
-        #
-        #  # produce a legend with a cross section of sizes from the scatter
-        #  handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
-        #  legend2 = ax.legend(handles, labels, loc="upper right", title="Sizes")
 
         # plot the decision function
         max_axis_val = 0
@@ -317,7 +313,6 @@ class DataParser(object):
 
         plt.xlim([0, max_axis_val * 1.05])
         plt.ylim([0, max_axis_val * 1.05])
-        plt.title(title)
         ax = plt.gca()
         ax.add_artist(legend1)
         ax.add_artist(legend2)
@@ -327,11 +322,10 @@ class DataParser(object):
         ylim = ax.get_ylim()
 
         # create grid to evaluate model
-        xx = np.linspace(xlim[0] - 2, xlim[1] + 2, 30) / factor
-        yy = np.linspace(ylim[0] - 2, ylim[1] + 2, 30) / factor
+        xx = np.linspace(xlim[0] - 2, xlim[1] + 2, 512) / factor
+        yy = np.linspace(ylim[0] - 2, ylim[1] + 2, 512) / factor
         YY, XX = np.meshgrid(yy, xx)
         xy = np.vstack([XX.ravel(), YY.ravel()]).T
-        #  import ipdb ; ipdb.set_trace()
         if hasattr(clf, 'decision_function'):
             Z = clf.decision_function(xy).reshape(XX.shape)
         elif hasattr(clf, 'predict'):
@@ -346,35 +340,49 @@ class DataParser(object):
                    linestyles=['--', '-', '--'])
         plt.gcf().set_size_inches((8, 6, ))
         plt.savefig('%s.png' % (experiment_name, ))
+        print(clf.intercept_ / factor)
+        if hasattr(clf, 'coef_'):
+            w = clf.coef_[0]
+            margin_width = 2/ np.linalg.norm(w / factor)
+            title = '%s, $MarginWidth=%.2f$' % (title, margin_width, )
+            print('MarginWidth = %f' % (margin_width, ))
+            self._sigma_values.append(sigma.item())
+            self._margin_width_values.append(margin_width.item())
+
+        plt.title(title)
         plt.show()
 
 
 SVC_KERNEL_TYPES = ('linear', 'poly', 'rbf', )
 class SVCParser(DataParser):
-    def __init__(self, kernel_type, gamma=None):
+    def __init__(self, kernel_type, c_value=45, gamma=None):
         if kernel_type not in SVC_KERNEL_TYPES:
             raise TypeError('Invalid kernel type, use %s' % (SVC_KERNEL_TYPES, ))
         super(SVCParser, self).__init__()
         self._kernel_type = kernel_type
         self._gamma = gamma
+        self._c_value = c_value
 
-    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, sigma, xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
         """
-        c_value = 75
+        labels_certaincy = np.minimum(np.abs(labels_raw - 0.65), np.abs(labels_raw - 0.35))
+        sample_weight = np.divide(labels_certaincy, np.sqrt(labels_std_raw))
+
+        factor /= np.max(sample_weight)
         result = np.ndarray((3, 2, ))
         x = data
         y = labels
         kwargs = dict()
 
         if self._gamma is None:
-            svc = svm.SVC(C=c_value, kernel=self._kernel_type)
+            svc = svm.SVC(C=self._c_value, kernel=self._kernel_type)
         else:
-            svc = svm.SVC(C=c_value, kernel=self._kernel_type, gamma=self._gamma)
+            svc = svm.SVC(C=self._c_value, kernel=self._kernel_type, gamma=self._gamma)
 
-        trained_svc = svc.fit(data, labels)
+        trained_svc = svc.fit(data, labels, sample_weight=sample_weight)
         self.create_plot(
             data,
             labels,
@@ -384,7 +392,8 @@ class SVCParser(DataParser):
             removed_data,
             factor,
             trained_svc,
-            '%s: SVM (%s kernel, C=%d%s)' % (title_data, self._kernel_type, c_value, '' if self._gamma is None else ', $\gamma$=%.1f' % (self._gamma, ), ),
+            sigma,
+            '$\sigma=%.1f$: SVM (%s kernel, C=%d%s)' % (sigma, self._kernel_type, self._c_value, '' if self._gamma is None else ', $\gamma$=%.1f' % (self._gamma, ), ),
             xlabel,
             ylabel,
             '%s_%s' % (experiment_name, self._kernel_type, )
@@ -393,7 +402,7 @@ class SVCParser(DataParser):
         return trained_svc.n_support_
 
 class SVRParser(DataParser):
-    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, title_data='', xlabel='', ylabel='', experiment_name=''):
+    def parse(self, data, labels, labels_raw, labels_std, labels_std_raw, removed_data, factor, sigma, xlabel='', ylabel='', experiment_name=''):
         """
         Returns: np.ndarray of shape (3,2) :
                     A two dimensional array of size 3 that contains the number of support vectors for each class(2) in the three kernels.
@@ -415,7 +424,8 @@ class SVRParser(DataParser):
                 removed_data,
                 factor,
                 trained_svr,
-                'SVR with %s kernel, %s' % (kernel_types[i], title_data, ),
+                sigma,
+                'SVR with %s kernel, $\sigma=%.1f$' % (kernel_types[i], sigma, ),
                 xlabel,
                 ylabel,
                 '%s_%s' % (experiment_name, self._kernel_type, )
@@ -433,15 +443,48 @@ def get_mean_plane_data_frame():
     data_frame = f.parse(RESULTS_MEAN_PLANE_EXPERIMENT_INDEX)
     return data_frame
 
+
 def get_sd_plane_data_frame():
     f = pd.ExcelFile(DATA_PATH)
     data_frame = f.parse(RESULTS_SD_PLANE_EXPERIMENT_INDEX)
     return data_frame
 
 
+def plot_sigma_margin(x, y):
+    print([type(i) for i in x])
+    print([type(i) for i in y])
+    fig = plt.figure(figsize=(2.2,2.2), dpi=300)
+    ax = plt.subplot(111)
+
+    plt.xlim(0, 2)
+    plt.ylim(0, 10)
+
+    ax.xaxis.set_major_locator(MaxNLocator(6))
+    ax.yaxis.set_major_locator(MaxNLocator(6))
+
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
+    ax.yaxis.set_minor_locator(MultipleLocator(1))
+
+
+#regression part
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+
+    line = np.dot(slope, x)+intercept
+    plt.plot(x, line, 'r', label='y={:.2f}x+{:.2f}'.format(slope,intercept))
+#end
+
+    plt.scatter(x,y, color="k", s=3.5)
+    plt.legend(fontsize=9)
+
+    plt.show()
+
+
+
+
 def handle_mean_experiments():
     #  parsers = [DummyParser()]#SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
     parsers = [SVCParser('linear'), SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
+    #  parsers = [SVCParser('poly'), SVCParser('rbf', gamma=1.7)]
 
     data_frame = get_mean_plane_data_frame()
     mean_experiment_groups = [PlaneExperiment(data_frame, 'STD', val, filter_label_func=filter_label_func_35) for val in [0.1, 0.4, 0.7, 1.5]]
@@ -459,10 +502,13 @@ def handle_mean_experiments():
                          experiment.labels_std_raw,
                          experiment._removed_data,
                          experiment.max_data,
-                         '$\sigma=%.2f$' % (experiment.z_value ,),
+                         experiment.z_value,
                          '$\mu_{A}$',
                          '$\mu_{B}$',
                          'mean_exp__sd_%.2f' % (experiment.z_value, ))
+    sigma = parsers[0]._sigma_values
+    margin_width = parsers[0]._margin_width_values
+    plot_sigma_margin(sigma, margin_width)
     #  plt.show()
     #  plt.savefig('mean_figure.png')
 
@@ -499,7 +545,7 @@ def handle_sd_experiments():
 
 def main():
     handle_mean_experiments()
-    handle_sd_experiments()
+    #  handle_sd_experiments()
 
 
 
