@@ -21,6 +21,7 @@ DATA_PATH = './results_exp2.xlsx'
 
 RESULTS_MEAN_PLANE_EXPERIMENT_INDEX = 0
 RESULTS_SD_PLANE_EXPERIMENT_INDEX = 1
+GRAPH_UNITS = '#frame'
 
 class PlaneExperiment(object):
     def __init__(self, data_frame: pd.core.frame.DataFrame, column_name=None, column_value=None, filter_label_func=None):
@@ -343,8 +344,8 @@ class DataParser(object):
         if hasattr(clf, 'coef_'):
             w = clf.coef_[0]
             margin_width = 2/ np.linalg.norm(w / factor)
-            title = '%s, $MarginWidth=%.2f$' % (title, margin_width, )
-            print('MarginWidth = %f' % (margin_width, ))
+            title = '%s, $MarginWidth=%.2f$ [%s]' % (title, margin_width, GRAPH_UNITS, )
+            print('MarginWidth = %f [%s]' % (margin_width, GRAPH_UNITS, ))
             self._sigma_values.append(sigma.item())
             self._margin_width_values.append(margin_width.item())
 
@@ -392,7 +393,7 @@ class SVCParser(DataParser):
             factor,
             trained_svc,
             sigma,
-            '$\sigma=%.1f$: SVM (%s kernel, C=%d%s)' % (sigma, self._kernel_type, self._c_value, '' if self._gamma is None else ', $\gamma$=%.1f' % (self._gamma, ), ),
+            '$\sigma=%.1f$ [%s]: SVM (%s kernel, C=%d%s)' % (sigma, GRAPH_UNITS, self._kernel_type, self._c_value, '' if self._gamma is None else ', $\gamma$=%.1f' % (self._gamma, ), ),
             xlabel,
             ylabel,
             '%s_%s' % (experiment_name, self._kernel_type, )
@@ -424,7 +425,7 @@ class SVRParser(DataParser):
                 factor,
                 trained_svr,
                 sigma,
-                'SVR with %s kernel, $\sigma=%.1f$' % (kernel_types[i], sigma, ),
+                'SVR with %s kernel, $\sigma=%.1f$ [%s]' % (kernel_types[i], sigma, GRAPH_UNITS, ),
                 xlabel,
                 ylabel,
                 '%s_%s' % (experiment_name, self._kernel_type, )
@@ -502,8 +503,8 @@ def handle_mean_experiments():
                          experiment._removed_data,
                          experiment.max_data,
                          experiment.z_value,
-                         '$\mu_{A}$',
-                         '$\mu_{B}$',
+                         '$\mu_{A}$ [%s]' % (GRAPH_UNITS, ),
+                         '$\mu_{B}$ [%s]' % (GRAPH_UNITS, ),
                          'mean_exp__sd_%.2f' % (experiment.z_value, ))
     sigma = parsers[0]._sigma_values
     margin_width = parsers[0]._margin_width_values
@@ -531,8 +532,8 @@ def handle_sd_experiments():
                              experiment._removed_data,
                              experiment.max_data,
                              experiment.z_value,
-                             '$\sigma_{A}$',
-                             '$\sigma_{B}$',
+                             '$\sigma_{A}$ [%s]' % (GRAPH_UNITS, ),
+                             '$\sigma_{B}$ [%s]' % (GRAPH_UNITS, ),
                              'sd_exp__mean_%d' % (experiment.z_value, ))
             except Exception as e:
                 print('Error: %s' % (e, ))
