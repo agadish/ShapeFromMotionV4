@@ -140,18 +140,18 @@ class DummyParser(object):
         def label_value_to_color(val):
             q = 0.35 / 3
             if val < 0.35 / 3:
-                return '#FF0000'
+                return '#F86967'
             elif 0.35 / 3 <= val < 0.35 * 2 / 3:
-                return '#801010'
+                return '#FA9D75'
             elif 0.35 * 2 / 3 <= val < 0.35:
-                return '#604040'
+                return '#FDD17F'
 
             if 1 - 3 * q < val <= 1 - 2 * q:
-                return '#406040'
+                return '#E0E383'
             if 1 - 2 * q < val <= 1 - q:
-                return '#108010'
+                return '#A2D07F'
             if 1 - q < val:
-                return '#00FF00'
+                return '#63BE7B'
 
             import ipdb ; ipdb.set_trace()
             return '#0000FF'
@@ -184,13 +184,13 @@ class DummyParser(object):
         colors = ['grey' for t in y_raw]
         sizes = [60 for t in y_std_raw]
         #  legend_handles = [
-        #          mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=5, label='$0\leq x<0.12$'),
-        #          mlines.Line2D([], [], color='#801010', linestyle='None', marker='o', markersize=5, label='$0.12\leq x<0.24$'),
-        #          mlines.Line2D([], [], color='#604040', linestyle='None', marker='o', markersize=5, label='$0.24\leq x<0.35$'),
-        #          mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=5, label='omitted result'),
-        #          mlines.Line2D([], [], color='#406040', linestyle='None', marker='o', markersize=5, label='$0.65<x\leq 0.76$'),
-        #          mlines.Line2D([], [], color='#108010', linestyle='None', marker='o', markersize=5, label='$0.76<x\leq 0.88$'),
-        #          mlines.Line2D([], [], color='#00F000', linestyle='None', marker='o', markersize=5, label='$0.88<x\leq 1$'),
+        #          mlines.Line2D([], [], color='#F86967', linestyle='None', marker='o', markersize=5, label='$0\leq x<0.12$'),
+        #          mlines.Line2D([], [], color='#FA9D75', linestyle='None', marker='o', markersize=5, label='$0.12\leq x<0.24$'),
+        #          mlines.Line2D([], [], color='#FDD17F', linestyle='None', marker='o', markersize=5, label='$0.24\leq x<0.35$'),
+        #          mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=5, label='Omitted result'),
+        #          mlines.Line2D([], [], color='#E0E383', linestyle='None', marker='o', markersize=5, label='$0.65<x\leq 0.76$'),
+        #          mlines.Line2D([], [], color='#A2D07F', linestyle='None', marker='o', markersize=5, label='$0.76<x\leq 0.88$'),
+        #          mlines.Line2D([], [], color='#63BE7B', linestyle='None', marker='o', markersize=5, label='$0.88<x\leq 1$'),
         #          ]
         #  #  legend1 = plt.legend(handles=legend_handles, loc=2)
         #  legend_handles2 = [
@@ -266,18 +266,18 @@ class DataParser(object):
         def label_value_to_color(val):
             q = 0.35 / 3
             if val < 0.35 / 3:
-                return '#FF0000'
+                return '#F86967'
             elif 0.35 / 3 <= val < 0.35 * 2 / 3:
-                return '#801010'
+                return '#FA9D75'
             elif 0.35 * 2 / 3 <= val < 0.35:
-                return '#604040'
+                return '#FDD17F'
 
             if 1 - 3 * q < val <= 1 - 2 * q:
-                return '#406040'
+                return '#E0E383'
             if 1 - 2 * q < val <= 1 - q:
-                return '#108010'
+                return '#A2D07F'
             if 1 - q < val:
-                return '#00FF00'
+                return '#63BE7B'
 
             import ipdb ; ipdb.set_trace()
             return '#0000FF'
@@ -289,13 +289,13 @@ class DataParser(object):
         sizes = [label_std_value_size(t) for t in y_std_raw]
         scatter = plt.scatter(X[:, 0] * factor, X[:, 1] * factor, c=colors, s=sizes, cmap=plt.cm.PiYG)
         legend_handles = [
-                mlines.Line2D([], [], color='#F00000', linestyle='None', marker='o', markersize=9, label='$0\leq x<y.12$ (certain)'),
-                mlines.Line2D([], [], color='#801010', linestyle='None', marker='o', markersize=9, label='$0.12\leq x<0.24$'),
-                mlines.Line2D([], [], color='#604040', linestyle='None', marker='o', markersize=9, label='$0.24\leq x<0.35$'),
-                mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=9, label='omitted'),
-                mlines.Line2D([], [], color='#406040', linestyle='None', marker='o', markersize=9, label='$0.65<x\leq 0.76$'),
-                mlines.Line2D([], [], color='#108010', linestyle='None', marker='o', markersize=9, label='$0.76<x\leq 0.88$'),
-                mlines.Line2D([], [], color='#00F000', linestyle='None', marker='o', markersize=9, label='$0.88<x\leq 1$ (certain)'),
+                mlines.Line2D([], [], color='#F86967', linestyle='None', marker='o', markersize=9, label='$0\leq x<y.12$ (Certain)'),
+                mlines.Line2D([], [], color='#FA9D75', linestyle='None', marker='o', markersize=9, label='$0.12\leq x<0.24$'),
+                mlines.Line2D([], [], color='#FDD17F', linestyle='None', marker='o', markersize=9, label='$0.24\leq x<0.35$'),
+                mlines.Line2D([], [], color='grey', linestyle='None', marker='x', markersize=9, label='Omitted'),
+                mlines.Line2D([], [], color='#E0E383', linestyle='None', marker='o', markersize=9, label='$0.65<x\leq 0.76$'),
+                mlines.Line2D([], [], color='#A2D07F', linestyle='None', marker='o', markersize=9, label='$0.76<x\leq 0.88$'),
+                mlines.Line2D([], [], color='#63BE7B', linestyle='None', marker='o', markersize=9, label='$0.88<x\leq 1$ (Certain)'),
                 ]
         legend1 = plt.legend(handles=legend_handles, loc=2)
         legend_handles2 = [
@@ -340,7 +340,6 @@ class DataParser(object):
         ax.contour(XX * factor, YY * factor, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                    linestyles=['--', '-', '--'])
         plt.gcf().set_size_inches((8, 6, ))
-        plt.savefig('%s.png' % (experiment_name, ))
         if hasattr(clf, 'coef_'):
             w = clf.coef_[0]
             margin_width = 2/ np.linalg.norm(w / factor)
@@ -350,6 +349,7 @@ class DataParser(object):
             self._margin_width_values.append(margin_width.item())
 
         plt.title(title)
+        plt.savefig('%s.png' % (experiment_name, ))
         plt.show()
 
 
